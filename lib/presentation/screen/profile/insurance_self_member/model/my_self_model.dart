@@ -1,0 +1,84 @@
+class InsuranceSelfModel {
+  bool? success;
+  String? message;
+  int? statusCode;
+  List<Data>? data;
+
+  InsuranceSelfModel({this.success, this.message, this.statusCode, this.data});
+
+  InsuranceSelfModel.fromJson(Map<String, dynamic> json) {
+    success = json['success'];
+    message = json['message'];
+    statusCode = json['statusCode'];
+    if (json['data'] != null) {
+      data = <Data>[];
+      json['data'].forEach((v) {
+        data!.add(new Data.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['success'] = this.success;
+    data['message'] = this.message;
+    data['statusCode'] = this.statusCode;
+    if (this.data != null) {
+      data['data'] = this.data!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class Data {
+  String? sId;
+  String? normalUserId;
+  String? forWhom;
+  String? name;
+  String? number;
+  String? insuranceProvider;
+  String? expiryDate;
+  String? createdAt;
+  String? updatedAt;
+  int? iV;
+
+  Data(
+      {this.sId,
+        this.normalUserId,
+        this.forWhom,
+        this.name,
+        this.number,
+        this.insuranceProvider,
+        this.expiryDate,
+        this.createdAt,
+        this.updatedAt,
+        this.iV});
+
+  Data.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    normalUserId = json['normalUserId'];
+    forWhom = json['forWhom'];
+    name = json['name'];
+    number = json['number'];
+    insuranceProvider = json['insuranceProvider'];
+    expiryDate = json['expiryDate'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+    iV = json['__v'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['_id'] = this.sId;
+    data['normalUserId'] = this.normalUserId;
+    data['forWhom'] = this.forWhom;
+    data['name'] = this.name;
+    data['number'] = this.number;
+    data['insuranceProvider'] = this.insuranceProvider;
+    data['expiryDate'] = this.expiryDate;
+    data['createdAt'] = this.createdAt;
+    data['updatedAt'] = this.updatedAt;
+    data['__v'] = this.iV;
+    return data;
+  }
+}

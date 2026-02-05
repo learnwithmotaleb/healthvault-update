@@ -1,0 +1,242 @@
+import 'package:flutter/material.dart';
+import 'package:get/get_utils/src/extensions/internacionalization.dart';
+import 'package:healthvault/presentation/widget/custom_appbar.dart';
+import 'package:healthvault/utils/app_text_style/app_text_style.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../../../../../core/responsive_layout/dimensions/dimensions.dart';
+import '../../../../../utils/app_colors/app_colors.dart';
+import '../../../../../utils/assets_image/app_images.dart';
+import '../../../../../utils/static_strings/static_strings.dart';
+
+class FaqsScreen extends StatefulWidget {
+  const FaqsScreen({super.key});
+
+  @override
+  State<FaqsScreen> createState() => _FaqsScreenState();
+}
+
+<<<<<<< Updated upstream
+
+  Future<void> openDialPad(String phoneNumber) async {
+    final Uri uri = Uri(scheme: 'tel', path: phoneNumber);
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      throw 'Could not launch dial pad';
+    }
+  }
+
+=======
+class _FaqsScreenState extends State<FaqsScreen> {
+>>>>>>> Stashed changes
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.whiteColor,
+      appBar: CommonAppBar(title: AppStrings.faq.tr),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: Dimensions.w(10)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+
+                    Text(AppStrings.faqs,style: AppTextStyles.title.copyWith(
+                      fontWeight: FontWeight.normal
+                    ),),
+                    SizedBox(height: Dimensions.h(8)),
+
+
+                    /// FAQ Items
+                    _faqExpansionTile(
+                      title: "How do I report a successful delivery?",
+                      content:
+                      "Fill in the required details, including your full name, email address, and a secure password. "
+                          "Ensure your email is valid as it will be used for account verification and communication.",
+                    ),
+<<<<<<< Updated upstream
+                  ),
+                ),
+
+                GestureDetector(
+                  onTap: () {
+                    // TODO: Call action
+                  },
+                  child: Card(
+                    elevation: 1,
+                    color: AppColors.whiteColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(Dimensions.r(12)),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(Dimensions.w(16)),
+                      child: Row(
+                        children: [
+                          Image.asset(
+                            AppImages.emergencyCall,
+                            width: Dimensions.w(40),
+                            height: Dimensions.h(40),
+                            color: AppColors.primaryColor,
+                          ),
+                          SizedBox(width: Dimensions.w(20)),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: (){
+                                openDialPad("01701577479");
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    AppStrings.callUs.tr,
+                                    style: AppTextStyles.body,
+                                  ),
+                                  SizedBox(height: Dimensions.h(4)),
+                                  Text(
+                                    AppStrings.ourHelpLineServiceIsActive.tr,
+                                    style: AppTextStyles.body,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+=======
+                    SizedBox(height: Dimensions.h(5)),
+      
+                    _faqListTile(title: "How do I report a successful delivery?"),
+                    SizedBox(height: Dimensions.h(5)),
+      
+                    _faqListTile(title: "How can I update my vehicle or personal info?"),
+                    SizedBox(height: Dimensions.h(5)),
+      
+                    _faqListTile(title: "How do I get paid?"),
+                    SizedBox(height: Dimensions.h(5)),
+      
+                    _faqListTile(title: "How do I start my delivery route?"),
+                    SizedBox(height: Dimensions.h(5)),
+      
+                    /// Need More Help Section
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text(
+                       AppStrings.needMoreHelp.tr,
+                        style: AppTextStyles.body.copyWith(
+                          fontSize: Dimensions.w(18),
+                        ),
+>>>>>>> Stashed changes
+                      ),
+                    ),
+                    SizedBox(height: Dimensions.h(5)),
+      
+                    GestureDetector(
+                      onTap: () {},
+                      child: Card(
+                        elevation: 1,
+                        color: AppColors.whiteColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(Dimensions.r(12)),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(Dimensions.w(16)),
+                          child: Row(
+                            children: [
+                              // Icon(Icons.emergency),
+                              Image.asset(
+                                AppImages.emergencyCall,
+                                width: Dimensions.w(40),
+                                height: Dimensions.h(40),
+                                color: AppColors.primaryColor,
+                                fit: BoxFit.contain,
+                              ),
+                              SizedBox(width: Dimensions.w(20)),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      AppStrings.callUs.tr,
+                                      style: AppTextStyles.body,
+                                    ),
+                                    SizedBox(height: Dimensions.h(4)),
+                                    Text(
+                                     AppStrings.ourHelpLineServiceIsActive.tr,
+                                      style: AppTextStyles.body,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: Dimensions.h(20)),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Expansion Tile FAQ
+  Widget _faqExpansionTile({required String title, required String content}) {
+    return Card(
+      color: AppColors.whiteColor,
+      elevation: 1,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(Dimensions.r(5)),
+      ),
+      child: ExpansionTile(
+        iconColor: AppColors.primaryColor,
+        collapsedIconColor: AppColors.primaryColor,
+        title: Text(
+          title,
+          style: AppTextStyles.body,
+        ),
+        children: [
+          Padding(
+            padding: EdgeInsets.all(Dimensions.w(16)),
+            child: Text(
+              content,
+              style: AppTextStyles.body,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  /// Simple ListTile FAQ
+  Widget _faqListTile({required String title, VoidCallback? onTap}) {
+    return Card(
+      color: AppColors.whiteColor,
+      elevation: 1,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(Dimensions.r(2)),
+      ),
+      child: ListTile(
+        title: Text(
+          title,
+          style: AppTextStyles.body,
+        ),
+        trailing: Icon(Icons.arrow_forward_ios, color: AppColors.primaryColor, size: Dimensions.w(18)),
+        onTap: onTap ?? () {
+
+
+        },
+        contentPadding: EdgeInsets.symmetric(horizontal: Dimensions.w(10)),
+      ),
+    );
+  }
+}
