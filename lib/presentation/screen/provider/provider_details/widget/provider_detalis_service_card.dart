@@ -6,7 +6,6 @@ import '../../../../../core/responsive_layout/dimensions/dimensions.dart';
 import '../../../../../helper/date_time_converter/date_time_converter.dart';
 import '../../../../../utils/app_colors/app_colors.dart';
 
-
 class ServiceCard extends StatelessWidget {
   final String serviceName;
   final String scheduleDate;
@@ -73,9 +72,11 @@ class ServiceCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(scheduleDate,style: AppTextStyles.body.copyWith(
-    color: AppColors.blackColor)),
-              Text(scheduleText),
+
+              Text(DateTimeHelper.date(scheduleDate)),
+              Text("Schedule"),
+
+
             ],
           ),
           SizedBox(height: Dimensions.h(5)),
@@ -84,29 +85,29 @@ class ServiceCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(AppStrings.bookingDate.tr,style: AppTextStyles.body.copyWith(
-                color: AppColors.blackColor
-              ),),
+              Text(
+                AppStrings.bookingDate.tr,
+                style: AppTextStyles.body.copyWith(color: AppColors.blackColor),
+              ),
               // Text(bookingDate),
-              Text(DateTimeHelper.time(bookingDate))
+              Text(DateTimeHelper.dateTime(bookingDate)),
             ],
           ),
-          SizedBox(height: Dimensions.h(5)),
+
 
           // Time
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(scheduleDate,style: AppTextStyles.body,),
-              Text(DateTimeHelper.time(time))
-
-    ],
+              Text(DateTimeHelper.dateTime(bookingDate)),
+              Text(DateTimeHelper.weekdayTime(time)),
+            ],
           ),
           SizedBox(height: Dimensions.h(10)),
 
           // Location
           Text(
-          AppStrings.location.tr,
+            AppStrings.location.tr,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           Text(location),
@@ -114,7 +115,7 @@ class ServiceCard extends StatelessWidget {
 
           // Reason
           Text(
-           AppStrings.reasonForVisit.tr,
+            AppStrings.reasonForVisit.tr,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           Text(reason),

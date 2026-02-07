@@ -40,57 +40,54 @@ class _FamilyMemberDocumentScreenState
               style: AppTextStyles.body.copyWith(fontWeight: FontWeight.bold),
             ),
             SizedBox(height: Dimensions.h(16)),
-
-            /// PICK IMAGE BOX
-            Obx(() => GestureDetector(
-              onTap: () => controller.pickImage(),
-              child: Container(
-                width: Dimensions.w(90),
-                height: Dimensions.h(90),
-                decoration: BoxDecoration(
-                  color: AppColors.whiteColor,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppColors.primaryColor),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: AppColors.greyColor,
-                      blurRadius: 2,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: controller.pickedImage.value == null
-                    ? const Center(
-                  child: Icon(
-                    Icons.add_a_photo_outlined,
-                    color: Colors.black54,
-                    size: 28,
+            Obx(
+                  () => GestureDetector(
+                onTap: () =>
+                    controller.pickMySelfImage(),
+                child: Container(
+                  width: Dimensions.w(90),
+                  height: Dimensions.h(90),
+                  decoration: BoxDecoration(
+                    color: AppColors.whiteColor,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.primaryColor),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: AppColors.greyColor,
+                        blurRadius: 2,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
                   ),
-                )
-                    : ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.file(
-                    File(controller.pickedImage.value!.path),
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
+                  child: controller.pickedMySelfImage.value == null
+                      ? const Center(
+                    child: Icon(
+                      Icons.add_a_photo_outlined,
+                      color: Colors.black54,
+                      size: 28,
+                    ),
+                  )
+                      : ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.file(
+                      File(controller.pickedMySelfImage.value!.path),
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ),
-            )),
+            ),
 
             SizedBox(height: Dimensions.h(20)),
 
-
-            /// IMAGES LIST
+            /// LIST OF UPLOADED IMAGES
             Expanded(
               child: Obx(() {
-                if (controller.myFamilyImages.isEmpty) {
+                if (controller.familyImages.isEmpty) {
                   return const Center(
-                    child: Text(
-                      "No family images uploaded",
-                      style: TextStyle(color: Colors.grey),
-                    ),
+                    child: Text("No images uploaded yet"),
                   );
                 }
 
@@ -98,9 +95,10 @@ class _FamilyMemberDocumentScreenState
                   child: Wrap(
                     spacing: 12,
                     runSpacing: 12,
-                    children: controller.myFamilyImages.map((url) {
+                    children: controller.familyImages.map((url) {
                       return Stack(
                         children: [
+                          /// IMAGE DISPLAY
                           Container(
                             width: 90,
                             height: 90,
@@ -112,11 +110,15 @@ class _FamilyMemberDocumentScreenState
                               ),
                             ),
                           ),
+
+                          /// DELETE BUTTON
                           Positioned(
                             top: 0,
                             right: 0,
                             child: GestureDetector(
-                              onTap: () => controller.removeMyFamilyImage(url),
+                              onTap: () {
+                                controller.removeFamilyImage(url);
+                              },
                               child: Container(
                                 decoration: const BoxDecoration(
                                   color: Colors.red,

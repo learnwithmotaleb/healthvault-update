@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:healthvault/core/responsive_layout/dimensions/dimensions.dart';
+import 'package:healthvault/helper/date_time_converter/date_time_converter.dart';
 import 'package:healthvault/utils/app_text_style/app_text_style.dart';
 
 import '../../../../utils/app_colors/app_colors.dart';
@@ -82,7 +83,7 @@ class AppointmentCard extends StatelessWidget {
 
                 const SizedBox(height: 4),
                 Text(
-                  dateTime,
+                  DateTimeHelper.dateTime(dateTime),
                   style:AppTextStyles.body.copyWith(
                 color: AppColors.hintColor
                 )

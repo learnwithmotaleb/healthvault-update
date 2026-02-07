@@ -15,6 +15,7 @@ import 'package:healthvault/utils/assets_image/app_images.dart';
 import 'package:healthvault/utils/static_strings/static_strings.dart';
 import 'package:http/http.dart';
 
+import '../../../../../helper/date_time_converter/date_time_converter.dart';
 import '../../../../../utils/app_colors/app_colors.dart';
 import '../../../../widget/custom_alert.dart';
 import '../../../../widget/custom_appbar.dart';
@@ -174,8 +175,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
               /// ---------------- Appointment Info ----------------
               Text(AppStrings.bookingDate.tr, style: AppTextStyles.label),
               SizedBox(height: Dimensions.h(5)),
-              Text(
-                controller.appointment['appointmentDateTime'] ?? "N/A",
+              Text(DateTimeHelper.dateTime( controller.appointment['appointmentDateTime'] ?? "N/A")
+               ,
                 style: AppTextStyles.body,
               ),
               SizedBox(height: Dimensions.h(10)),

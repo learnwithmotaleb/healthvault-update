@@ -1,95 +1,110 @@
 import 'dart:io';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../../../helper/tost_message/show_snackbar.dart';
 import '../../../../../service/api_service.dart';
 import '../../../../../service/api_url.dart';
 
 class FamilyMemberDocumentController extends GetxController {
   final ApiClient _apiClient = ApiClient();
+  final ImagePicker _picker = ImagePicker();
 
-  /// API image list (FULL URL)
-  final RxList<String> myFamilyImages = <String>[].obs;
-  final Rxn<File> pickedImage = Rxn<File>();
-
-  /// Base URL (for image render) - keep SAME as MySelf controller
+  /// Base URL for rendering images
   final String baseUrl = "${ApiUrl.mainDomain}/";
+
+  /// ==================== MySelf Images ====================
+  final RxList<String> mySelfImages = <String>[].obs;
+  final Rxn<File> pickedMySelfImage = Rxn<File>();
+
+  /// ==================== Family Images ====================
+  final RxList<String> familyImages = <String>[].obs;
+  final Rxn<File> pickedFamilyImage = Rxn<File>();
 
   @override
   void onInit() {
     super.onInit();
-    getMyFamilyImages();
+    getFamilyImages();
   }
 
+  // ==================== PICK IMAGE ====================
+  Future<void> pickMySelfImage() async {
+    final XFile? image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+    );
 
-
-  ///=================== PICK IMAGE ===================
-  Future<void> pickImage() async {
-    // Example using image_picker
-    // final XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
-    // if (image != null) pickedImage.value = File(image.path);
-
-    // Call upload after picking
-    if (pickedImage.value != null) {
-      uploadMyFamilyImage(pickedImage.value!);
+    if (image != null) {
+      final file = File(image.path);
+      pickedMySelfImage.value = file;
+      await uploadFamilyImage(file);
     }
   }
 
-  // ========================= ADD IMAGE (POST / MULTIPART) =========================
-  Future<void> uploadMyFamilyImage(File image) async {
+  Future<void> pickFamilyImage() async {
+    final XFile? image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+    );
+
+    if (image != null) {
+      final file = File(image.path);
+      pickedFamilyImage.value = file;
+      await uploadFamilyImage(file);
+    }
+  }
+
+
+  Future<void> getFamilyImages() async {
+    final res = await _apiClient.patch(
+      url: ApiUrl.fetchDocumentFamily,
+      body: {},
+      isToken: true,
+    );
+
+    if (res.isOk) {
+      final data = res.body["data"];
+      familyImages.value = (data?["medical_family_image"] ?? [])
+          .map<String>((e) => baseUrl + e.replaceAll('\\', '/'))
+          .toList();
+    } else {
+      AppSnackBar.fail("Failed to load Family images");
+    }
+  }
+
+
+  Future<void> uploadFamilyImage(File image) async {
     final res = await _apiClient.uploadMedicalImage(
-      url: ApiUrl.addDocumentFamily, // POST endpoint
+      url: ApiUrl.addDocumentFamily,
       imageKey: "medical_family_image",
       imageFile: image,
       isToken: true,
     );
 
     if (res.isOk) {
-      AppSnackBar.success("Image uploaded successfully");
-      await getMyFamilyImages(); // Refresh list
+      AppSnackBar.success("Family image uploaded successfully");
+      pickedFamilyImage.value = null;
+      await getFamilyImages();
     } else {
-      AppSnackBar.fail(res.statusText ?? "Upload failed");
+      AppSnackBar.fail("Failed to upload Family image");
     }
   }
 
-  // ========================= GET IMAGES =========================
-  Future<void> getMyFamilyImages() async {
-    final res = await _apiClient.getMedicalImages(
-      url: ApiUrl.fetchDocumentFamily, // GET endpoint
-      isToken: true,
-    );
 
-    if (res.isOk) {
-      final data = res.body["data"];
-      final List<String> rawImages =
-      List<String>.from(data?["medical_family_image"] ?? []);
 
-      // Convert backend paths to full URLs for UI
-      myFamilyImages.value =
-          rawImages.map((e) => baseUrl + e.replaceAll('\\', '/')).toList();
-    } else {
-      AppSnackBar.fail(res.statusText ?? "Failed to load images");
-    }
-  }
-
-  // ========================= REMOVE IMAGE (PATCH JSON) =========================
-  Future<void> removeMyFamilyImage(String fullImageUrl) async {
-    // Convert full URL → backend relative path with double backslashes
-    String relativePath = fullImageUrl.replaceFirst(baseUrl, '');
-    relativePath = relativePath.replaceAll('/', r'\\');
+  Future<void> removeFamilyImage(String fullUrl) async {
+    String path = fullUrl.replaceFirst(baseUrl, '').replaceAll('/', r'\\');
 
     final res = await _apiClient.removeMedicalImage(
-      url: ApiUrl.removeDocumentFamily, // PATCH endpoint
+      url: ApiUrl.removeDocumentFamily,
       isToken: true,
-      body: {
-        "deleteMedical_family_image": [relativePath],
-      },
+      body: {"deleteMedical_family_image": [path]},
     );
 
     if (res.isOk) {
-      myFamilyImages.remove(fullImageUrl);
-      AppSnackBar.success("Image removed successfully");
+      familyImages.remove(fullUrl);
+      AppSnackBar.success("Family image removed successfully");
     } else {
-      AppSnackBar.fail(res.statusText ?? "Remove failed");
+      AppSnackBar.fail("Failed to remove Family image");
     }
   }
 }
