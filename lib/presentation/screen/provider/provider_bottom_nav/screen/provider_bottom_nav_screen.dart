@@ -5,6 +5,7 @@ import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:get/get_utils/src/extensions/internacionalization.dart';
 import 'package:healthvault/presentation/screen/provider/provider_home/screen/provider_home_screen.dart';
+import 'package:healthvault/presentation/screen/provider/provider_profile/controller/provider_profile_controller.dart';
 
 import '../../../../../utils/app_colors/app_colors.dart';
 import '../../../../../utils/static_strings/static_strings.dart';
@@ -21,7 +22,10 @@ class ProviderBottomNavScreen extends StatefulWidget {
 }
 
 class _ProviderBottomNavScreenState extends State<ProviderBottomNavScreen> {
+
   final ProviderBottomNavController controller = Get.put(ProviderBottomNavController());
+  final ProviderProfileController providerProfileController = Get.put(ProviderProfileController());
+
 
   final List<Widget> screens = const [
     ProviderHomeScreen(),

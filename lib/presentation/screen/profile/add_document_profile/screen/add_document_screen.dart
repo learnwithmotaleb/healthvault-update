@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../../core/responsive_layout/dimensions/dimensions.dart';
@@ -29,34 +30,74 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: Dimensions.h(10)),
+
+            /// Section Title: MySelf
             Text(
               AppStrings.mySelf.tr,
               style: AppTextStyles.body.copyWith(fontWeight: FontWeight.bold),
             ),
             SizedBox(height: Dimensions.h(16)),
 
-            /// IMAGE PICKER
-            DocumentPickerField(
-              boxSize: 90,
-              onPickImage: controller.uploadMySelfImage,
+            /// IMAGE PICKER BOX
+            Obx(
+                  () => GestureDetector(
+                onTap: () =>
+                    controller.pickMySelfImage(),
+                child: Container(
+                  width: Dimensions.w(90),
+                  height: Dimensions.h(90),
+                  decoration: BoxDecoration(
+                    color: AppColors.whiteColor,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.primaryColor),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: AppColors.greyColor,
+                        blurRadius: 2,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: controller.pickedMySelfImage.value == null
+                      ? const Center(
+                    child: Icon(
+                      Icons.add_a_photo_outlined,
+                      color: Colors.black54,
+                      size: 28,
+                    ),
+                  )
+                      : ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.file(
+                      File(controller.pickedMySelfImage.value!.path),
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
             ),
 
             SizedBox(height: Dimensions.h(20)),
 
-            /// IMAGES LIST
+            /// LIST OF UPLOADED IMAGES
             Expanded(
-              child: SingleChildScrollView(
-                child: Obx(() {
-                  if (controller.mySelfImages.isEmpty) {
-                    return const SizedBox();
-                  }
+              child: Obx(() {
+                if (controller.mySelfImages.isEmpty) {
+                  return const Center(
+                    child: Text("No images uploaded yet"),
+                  );
+                }
 
-                  return Wrap(
+                return SingleChildScrollView(
+                  child: Wrap(
                     spacing: 12,
                     runSpacing: 12,
                     children: controller.mySelfImages.map((url) {
                       return Stack(
                         children: [
+                          /// IMAGE DISPLAY
                           Container(
                             width: 90,
                             height: 90,
@@ -68,11 +109,15 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                               ),
                             ),
                           ),
+
+                          /// DELETE BUTTON
                           Positioned(
                             top: 0,
                             right: 0,
                             child: GestureDetector(
-                              onTap: () => controller.removeMySelfImage(url),
+                              onTap: () {
+                                controller.removeMySelfImage(url);
+                              },
                               child: Container(
                                 decoration: const BoxDecoration(
                                   color: Colors.red,
@@ -89,9 +134,9 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
                         ],
                       );
                     }).toList(),
-                  );
-                }),
-              ),
+                  ),
+                );
+              }),
             ),
           ],
         ),

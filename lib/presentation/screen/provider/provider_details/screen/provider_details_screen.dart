@@ -1,15 +1,20 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:healthvault/core/responsive_layout/dimensions/dimensions.dart';
-import 'package:healthvault/core/routes/route_path.dart';
-import 'package:healthvault/presentation/screen/profile/favourite_profile/widget/favourite_card_widget.dart';
-import 'package:healthvault/presentation/widget/custom_appbar.dart';
-import 'package:healthvault/presentation/widget/hv_button.dart';
-import 'package:healthvault/utils/app_text_style/app_text_style.dart';
-import 'package:healthvault/utils/assets_image/app_images.dart';
-import 'package:healthvault/utils/static_strings/static_strings.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+import 'package:get/get_utils/src/extensions/internacionalization.dart';
 
+import '../../../../../core/responsive_layout/dimensions/dimensions.dart';
+import '../../../../../core/routes/route_path.dart';
 import '../../../../../utils/app_colors/app_colors.dart';
+import '../../../../../utils/app_text_style/app_text_style.dart';
+import '../../../../../utils/assets_image/app_images.dart';
+import '../../../../../utils/static_strings/static_strings.dart';
+import '../../../../widget/custom_appbar.dart';
+import '../../../../widget/hv_button.dart';
+import '../controller/provider_details_controller.dart';
 import '../widget/provider_detalis_service_card.dart';
 
 class ProviderDetailsScreen extends StatefulWidget {
@@ -20,78 +25,107 @@ class ProviderDetailsScreen extends StatefulWidget {
 }
 
 class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
+  final controller = Get.find<ProviderDetailsController>();
+
+  @override
+  void initState() {
+    super.initState();
+    final appointmentId = Get.arguments;
+    controller.getAppointmentDetails(appointmentId);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     // backgroundColor: AppColors.whiteColor,
       appBar: CommonAppBar(title: AppStrings.details.tr),
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0),
-        child: Column(
+        final data = controller.appointment.value;
+        if (data == null) {
+          return const Center(child: Text("No appointment details found"));
+        }
 
-          children: [
-            SizedBox(height: Dimensions.h(5),),
-            Container(
-              width: Dimensions.w(400),
-              height:Dimensions.h(136) ,
-              decoration: BoxDecoration(
-                color: AppColors.whiteColor,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.greyColor.withOpacity(0.1),
-                    spreadRadius: 1,
-                    blurRadius: 1
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          child: Column(
+            children: [
+              SizedBox(height: Dimensions.h(5)),
 
-                  )
-                ]
-              ),
-              child:Padding(
-                padding: const EdgeInsets.all(16.0),
+              /// 🔹 User Info Card
+              Container(
+                width: Dimensions.w(400),
+                height: Dimensions.h(136),
+                decoration: BoxDecoration(
+                  color: AppColors.whiteColor,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.greyColor.withOpacity(0.1),
+                      blurRadius: 1,
+                    ),
+                  ],
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(30),
-
-                        child: Image.asset(
-                          width: Dimensions.w(92),
-                          height: Dimensions.h(92),
-                            AppImages.motalebImage),
+                        borderRadius: BorderRadius.circular(1000),
+                        child: Image.network(
+                          data.normalUserId?.profileImage ?? "",
+                          width: Dimensions.w(80),
+                          height: Dimensions.h(80),
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) =>
+                              Image.asset(AppImages.motalebImage,   width: Dimensions.w(80),
+                                height: Dimensions.h(80),),
+                        ),
                       ),
                       SizedBox(width: Dimensions.w(24)),
-                      // Spacer(),
-                      Text("Abdul Motaleb",style: AppTextStyles.title,)
+                      Text(
+                        data.normalUserId?.fullName ?? "",
+                        style: AppTextStyles.label.copyWith(fontWeight: FontWeight.bold),
+                      ),
                     ],
                   ),
                 ),
               ),
-            ),
-            SizedBox(height: Dimensions.h(16),),
-            ServiceCard(
-              serviceName: "General Physician, Lab Test",
-              scheduleDate: "15 November 2025",
-              scheduleText: "Scheduled",
-              bookingDate: "20 November 2025",
-              time: "06:30 PM",
-              location: "Dhaka-Airport, 1230, Dhaka",
-              reason: "Annual check-up",
-            ),
 
-            SizedBox(height: Dimensions.h(30),),
-            HVButton(label: AppStrings.viewDocument.tr,backgroundColor: AppColors.whiteColor,borderSideColor: AppColors.whiteColor, textColor: AppColors.primaryColor,  onPressed: (){
+              SizedBox(height: Dimensions.h(16)),
 
-              Get.toNamed(RoutePath.appalmentDocument);
-            })
+              /// 🔹 Service Card
+              ServiceCard(
+                serviceName: data.serviceId?.title ?? "",
+                scheduleDate: data.appointmentDateTime ?? "",
+                scheduleText: data.status ?? "",
+                bookingDate: data.createdAt ?? "",
+                time: data.appointmentDateTime ?? "",
+                location: data.providerId?.address ?? "",
+                reason: data.reasonForVisit ?? "",
+              ),
 
-          ],
-        ),
-      ),
+              SizedBox(height: Dimensions.h(30)),
+
+              /// 🔹 View Document Button
+              HVButton(
+                label: AppStrings.viewDocument.tr,
+                backgroundColor: AppColors.whiteColor,
+                borderSideColor: AppColors.whiteColor,
+                textColor: AppColors.primaryColor,
+                onPressed: () {
+                  Get.toNamed(
+                    RoutePath.appalmentDocument,
+                    arguments: data.appointmentImages,
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      }),
     );
   }
 }

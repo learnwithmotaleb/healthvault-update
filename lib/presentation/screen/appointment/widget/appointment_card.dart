@@ -22,13 +22,17 @@ class AppointmentCard extends StatelessWidget {
     required this.status,
     this.statusColor = AppColors.primaryColor, this.onTap, // Default status color
   }) : super(key: key);
-
+  /// Utility function to truncate text and add "..." if needed
+  String _truncate(String text, int maxLength) {
+    if (text.length <= maxLength) return text;
+    return '${text.substring(0, maxLength)}...';
+  }
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: AppColors.whiteColor,
@@ -61,7 +65,13 @@ class AppointmentCard extends StatelessWidget {
                       color: AppColors.hintColor,
                     ),
                     children: [
-                      TextSpan(text: service),
+                      TextSpan(
+                        text: _truncate(service, 25), // limit to 150 characters
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.black,
+                        ),
+                      ),
                       TextSpan(text: ' • '),
                       TextSpan(text: price,style: AppTextStyles.body.copyWith(
                         color: AppColors.primaryColor
@@ -81,7 +91,7 @@ class AppointmentCard extends StatelessWidget {
             ),
             // Right Side Button
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
+              padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
               decoration: BoxDecoration(
                 color: statusColor,
                 borderRadius: BorderRadius.circular(16),

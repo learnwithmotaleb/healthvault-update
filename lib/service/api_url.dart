@@ -87,14 +87,33 @@ class ApiUrl {
 
 
 
-  //========================Profile Document===================
-  static String patchProfileDocumentMySelf= "$baseUrl/medicalDocument/update-document";
-  static String removeProfileDocumentMySelf= "$baseUrl/medicalDocument/update-document";
-  static String getProfileDocumentMySelf="$baseUrl/medicalDocument/getMy-document";
-  static String getProfileDocumentFamilyMember= "$baseUrl/medicalDocument/getMy-document";
-  static String patchProfileDocumentFamilyMember= "$baseUrl/medicalDocument/update-document";
-  static String removeProfileDocumentFamilyMember= "$baseUrl/medicalDocument/update-document";
+  //======================== Document===================
+  static String fetchDocumentSelf= "$baseUrl/medicalDocument/update-document";
+  static String fetchDocumentFamily= "$baseUrl/medicalDocument/update-document";
 
+
+  static String addDocumentSelf= "$baseUrl/medicalDocument/create-document";
+  //form-data
+  //medical_mySelf_image
+
+  static String addDocumentFamily= "$baseUrl/medicalDocument/create-document";
+  //form-data
+  //medical_family_image
+
+  static String removeDocumentSelf= "$baseUrl/medicalDocument/update-document";
+  //body
+  // {
+  //   "deleteMedical_mySelf_image": [     "uploads\\images\\medical_mySelf_image\\1769668946501-play_store_512.png",
+  //             "uploads\\images\\medical_mySelf_image\\1769669186771-play_store_512.png",
+  //             "uploads\\images\\medical_mySelf_image\\1769669208881-play_store_512.png"],
+
+
+  static String removeDocumentFamily= "$baseUrl/medicalDocument/update-document";
+  //body
+  // "deleteMedical_family_image":[          "uploads\\images\\medical_family_image\\1770437350552-verified.png",
+  //             "uploads\\images\\medical_family_image\\1770437429045-verified.png",
+  //             "uploads\\images\\medical_family_image\\1770437446490-verified.png"]
+  // }
 
 
 

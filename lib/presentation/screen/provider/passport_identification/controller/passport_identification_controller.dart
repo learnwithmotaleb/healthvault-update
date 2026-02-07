@@ -41,6 +41,8 @@ class PassportIdentificationController extends GetxController {
 
   AppRole? role;
 
+  String other = "OTHER";
+
 
 
 
@@ -94,6 +96,7 @@ class PassportIdentificationController extends GetxController {
 
     /// Receive image from MedicalLicenseController
     profilePhoto = medicalCtrl.photo.value;
+
 
     //===============
 
@@ -197,7 +200,7 @@ class PassportIdentificationController extends GetxController {
           "password": password,
           "role": role?.name ?? "PROVIDER",
           "providerTypeId": providerTypeId,
-          "providerTypeString": providerTypeKey,
+          "providerTypeString": other.toUpperCase(),
           "displayName": pharmacyController.nameController.text.trim(),
           "businessRegistrationNumber": name.trim(),
           "serviceId": [serviceId], // Array

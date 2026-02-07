@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:get/get.dart';
-
 import '../../../../../helper/tost_message/show_snackbar.dart';
 import '../../../../../service/api_service.dart';
 import '../../../../../service/api_url.dart';
@@ -10,6 +9,7 @@ class FamilyMemberDocumentController extends GetxController {
 
   /// API image list (FULL URL)
   final RxList<String> myFamilyImages = <String>[].obs;
+  final Rxn<File> pickedImage = Rxn<File>();
 
   /// Base URL (for image render) - keep SAME as MySelf controller
   final String baseUrl = "${ApiUrl.mainDomain}/";
@@ -20,10 +20,24 @@ class FamilyMemberDocumentController extends GetxController {
     getMyFamilyImages();
   }
 
-  // ========================= ADD IMAGE (PATCH + MULTIPART) =========================
+
+
+  ///=================== PICK IMAGE ===================
+  Future<void> pickImage() async {
+    // Example using image_picker
+    // final XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    // if (image != null) pickedImage.value = File(image.path);
+
+    // Call upload after picking
+    if (pickedImage.value != null) {
+      uploadMyFamilyImage(pickedImage.value!);
+    }
+  }
+
+  // ========================= ADD IMAGE (POST / MULTIPART) =========================
   Future<void> uploadMyFamilyImage(File image) async {
     final res = await _apiClient.uploadMedicalImage(
-      url: ApiUrl.patchProfileDocumentFamilyMember,
+      url: ApiUrl.addDocumentFamily, // POST endpoint
       imageKey: "medical_family_image",
       imageFile: image,
       isToken: true,
@@ -31,7 +45,7 @@ class FamilyMemberDocumentController extends GetxController {
 
     if (res.isOk) {
       AppSnackBar.success("Image uploaded successfully");
-      await getMyFamilyImages();
+      await getMyFamilyImages(); // Refresh list
     } else {
       AppSnackBar.fail(res.statusText ?? "Upload failed");
     }
@@ -40,19 +54,18 @@ class FamilyMemberDocumentController extends GetxController {
   // ========================= GET IMAGES =========================
   Future<void> getMyFamilyImages() async {
     final res = await _apiClient.getMedicalImages(
-      url: ApiUrl.getProfileDocumentFamilyMember,
+      url: ApiUrl.fetchDocumentFamily, // GET endpoint
       isToken: true,
     );
 
     if (res.isOk) {
       final data = res.body["data"];
-
       final List<String> rawImages =
       List<String>.from(data?["medical_family_image"] ?? []);
 
-      myFamilyImages.value = rawImages
-          .map((e) => baseUrl + e.replaceAll('\\', '/'))
-          .toList();
+      // Convert backend paths to full URLs for UI
+      myFamilyImages.value =
+          rawImages.map((e) => baseUrl + e.replaceAll('\\', '/')).toList();
     } else {
       AppSnackBar.fail(res.statusText ?? "Failed to load images");
     }
@@ -60,10 +73,12 @@ class FamilyMemberDocumentController extends GetxController {
 
   // ========================= REMOVE IMAGE (PATCH JSON) =========================
   Future<void> removeMyFamilyImage(String fullImageUrl) async {
-    final relativePath = fullImageUrl.replaceFirst(baseUrl, '');
+    // Convert full URL → backend relative path with double backslashes
+    String relativePath = fullImageUrl.replaceFirst(baseUrl, '');
+    relativePath = relativePath.replaceAll('/', r'\\');
 
     final res = await _apiClient.removeMedicalImage(
-      url: ApiUrl.removeProfileDocumentFamilyMember,
+      url: ApiUrl.removeDocumentFamily, // PATCH endpoint
       isToken: true,
       body: {
         "deleteMedical_family_image": [relativePath],

@@ -96,7 +96,7 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(100),
                               child: (provider?.profileImage ?? "").isNotEmpty
                                   ? Image.network(
                                 "${ApiUrl.mainDomain}/${provider!.profileImage!.replaceAll("\\", "/")}", // fix backslash
@@ -127,7 +127,7 @@ class _ProviderProfileScreenState extends State<ProviderProfileScreen> {
                               ),
 
                             ),
-                            SizedBox(width: Dimensions.w(30)),
+                            SizedBox(width: Dimensions.w(12)),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [

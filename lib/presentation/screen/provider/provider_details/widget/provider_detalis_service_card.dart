@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:healthvault/utils/app_text_style/app_text_style.dart';
 import 'package:healthvault/utils/static_strings/static_strings.dart';
 import '../../../../../core/responsive_layout/dimensions/dimensions.dart';
+import '../../../../../helper/date_time_converter/date_time_converter.dart';
 import '../../../../../utils/app_colors/app_colors.dart';
 
 
@@ -86,7 +87,8 @@ class ServiceCard extends StatelessWidget {
               Text(AppStrings.bookingDate.tr,style: AppTextStyles.body.copyWith(
                 color: AppColors.blackColor
               ),),
-              Text(bookingDate),
+              // Text(bookingDate),
+              Text(DateTimeHelper.time(bookingDate))
             ],
           ),
           SizedBox(height: Dimensions.h(5)),
@@ -96,8 +98,9 @@ class ServiceCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(scheduleDate,style: AppTextStyles.body,),
-              Text(time),
-            ],
+              Text(DateTimeHelper.time(time))
+
+    ],
           ),
           SizedBox(height: Dimensions.h(10)),
 
