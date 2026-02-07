@@ -254,11 +254,22 @@ class _HomeScreenState extends State<HomeScreen> {
                     onFavoriteTap: () {
 
                       controller.addFavorite(provider.id.toString());
-                      print("Favorite tapped for ${provider.fullName}");
                     },
                     onViewDetails: () {
-                      print("View Details tapped for ${provider.fullName}");
-                      Get.toNamed(RoutePath.details, arguments: provider);
+
+                      final String profileId = provider.user!.first.profileId!;
+                      print("Provider Profile Id: $profileId");
+
+
+                      Get.toNamed(
+                          RoutePath.infoProviderDetails,
+                        arguments: {
+                          "profileId": profileId.trim()
+                        },
+                      );
+
+
+
                     },
                   );
                 },

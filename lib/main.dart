@@ -8,6 +8,7 @@ import 'app.dart';
 import 'global/language/controller/language_controller.dart';
 import 'helper/device_utils/device_utils.dart';
 import 'helper/local_db/local_db.dart';
+import 'helper/no_internet/controller/no_internet_controller.dart';
 import 'helper/role_controller/role_controller.dart';
 
 void main() async{
@@ -20,9 +21,8 @@ void main() async{
   MapRequest.requestLocationPermission();
   DeviceUtils.lockDevicePortrait();
   Get.put(ServiceSelectionController());
+  Get.put(InternetController(), permanent: true);
   await SharePrefsHelper.init();
-
-
 
 
 

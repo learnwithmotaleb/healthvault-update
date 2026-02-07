@@ -22,9 +22,9 @@ class HealthArticleInfoCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
+        margin: const EdgeInsets.only(bottom: 5),
         width: double.infinity,
-        height: Dimensions.h(255),
+        height: Dimensions.h(300),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(5),
@@ -37,30 +37,31 @@ class HealthArticleInfoCard extends StatelessWidget {
             ),
           ],
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              /// Image
-              ClipRRect(
-                child: Image.network(
-                  image,
-                  width: double.infinity,
-                  height:Dimensions.h(148),
-                  fit: BoxFit.cover,
-                ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /// Image
+            ClipRRect(
+              child: Image.network(
+                image,
+                width: double.infinity,
+                height:Dimensions.h(148),
+                fit: BoxFit.cover,
               ),
-          
-              /// Content
-              Padding(
-                padding: const EdgeInsets.all(14),
+            ),
+        
+            /// Content
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
                       style: AppTextStyles.title.copyWith(
-                        color: AppColors.loginLogoRadiusColor
+                        color: AppColors.loginLogoRadiusColor,
+                        fontWeight: FontWeight.normal
                       )
                     ),
                     const SizedBox(height: 6),
@@ -69,15 +70,15 @@ class HealthArticleInfoCard extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 12,
                         color: AppColors.hintColor,
                       ),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

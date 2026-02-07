@@ -8,6 +8,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
 import 'package:logger/logger.dart';
 import '../helper/local_db/local_db.dart';
+import '../helper/no_internet/controller/no_internet_controller.dart';
 
 final log = Logger();
 
@@ -51,24 +52,58 @@ class ApiClient {
 
 
   /// ---------------- Master Request Handler ---------------------
-  Future<ApiResult> safeRequest(Future<http.Response> Function() requestFn, {
-    required String url,
-    String method = "GET",
-  }) async {
+  /// ---------------- Master Request Handler ---------------------
+  Future<ApiResult> safeRequest(
+      Future<http.Response> Function() requestFn, {
+        required String url,
+        String method = "GET",
+        bool checkInternet = true,
+      }) async {
     try {
       _logRequest(url, method);
+
+      // Optional: check internet before request
+      if (checkInternet && Get.isRegistered<InternetController>()) {
+        final controller = Get.find<InternetController>();
+        if (!controller.isConnected.value) {
+          return _handleException("No internet connection!");
+        }
+      }
+
       final response = await requestFn().timeout(defaultTimeout);
+
+      // Update internet status on success
+      if (Get.isRegistered<InternetController>()) {
+        Get.find<InternetController>().setConnected();
+      }
+
       return _handleResponse(response);
-    } on SocketException {
+    }
+
+    // No internet
+    on SocketException {
+      if (Get.isRegistered<InternetController>()) {
+        Get.find<InternetController>().setDisconnected();
+      }
       return _handleException("No internet connection!");
-    } on TimeoutException {
-      return _handleException("Request timeout!");
-    } on http.ClientException catch (e) {
-      return _handleException("Client error: $e");
-    } catch (e) {
-      return _handleException("Something went wrong: $e");
+    }
+
+    // Timeout
+    on TimeoutException {
+      return _handleException("Request timeout. Please try again.");
+    }
+
+    // Client error
+    on http.ClientException catch (e) {
+      return _handleException("Client error: ${e.message}");
+    }
+
+    // Unknown error
+    catch (e) {
+      return _handleException("Unexpected error: $e");
     }
   }
+
 
   /// ---------------- Response Handler ---------------------------
   ApiResult _handleResponse(http.Response response) {

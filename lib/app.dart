@@ -9,6 +9,7 @@ import 'core/theme/light_theme.dart';
 import 'core/theme/dark_theme.dart';
 import 'core/theme/theme_controller.dart';
 import 'global/language/controller/language_controller.dart';
+import 'helper/no_internet/screen/no_internet_screen.dart';
 import 'presentation/screen/language/screen/language_screen.dart'; // your screen
 
 class MyApp extends StatelessWidget {
@@ -44,6 +45,13 @@ class MyApp extends StatelessWidget {
         getPages: AppRouter.pages,
         initialRoute: RoutePath.splash,
         // home:  ComponentsShowcasePage(), // or your initial screen
+
+        // 🔥 IMPORTANT: Wrap entire app
+        builder: (context, child) {
+          return InternetWrapper(
+            child: child ?? const SizedBox(),
+          );
+        },
       );
     });
   }

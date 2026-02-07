@@ -1,9 +1,15 @@
 import 'package:get/get.dart';
+import 'package:healthvault/helper/tost_message/show_snackbar.dart';
+import '../../../../../service/api_service.dart';
+import '../../../../../service/api_url.dart';
+import '../model/provider_appointment_model.dart';
 
-class ProviderHomeController extends GetxController{
+class ProviderHomeController extends GetxController {
+  var isLoading = true.obs;
+  var appointments = <Appointment>[].obs;
 
+  final ApiClient apiClient = ApiClient(); // Use your ApiClient
 
-<<<<<<< Updated upstream
   @override
   void onInit() {
     super.onInit();
@@ -50,6 +56,4 @@ class ProviderHomeController extends GetxController{
       isLoading.value = false;
     }
   }
-=======
->>>>>>> Stashed changes
 }

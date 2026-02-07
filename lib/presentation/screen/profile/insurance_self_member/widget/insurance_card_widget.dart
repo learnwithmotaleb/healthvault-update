@@ -32,6 +32,7 @@ class InsuranceCard extends StatelessWidget {
         /// MAIN CARD
         Container(
           padding: EdgeInsets.symmetric(horizontal: Dimensions.h(5)),
+          margin: EdgeInsets.symmetric(vertical: 2),
           decoration: BoxDecoration(
             border: Border.all(
               color: AppColors.primaryColor,

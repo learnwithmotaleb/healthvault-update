@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:healthvault/presentation/screen/category_screen/details/widget/date_picker_field.dart';
 import 'package:healthvault/presentation/widget/custom_appbar.dart';
 import 'package:healthvault/presentation/widget/hv_button.dart';
 import 'package:healthvault/presentation/widget/hv_text_field.dart';
@@ -102,13 +103,14 @@ class EditProfileScreen extends StatelessWidget {
                           Text(AppStrings.dateOfBirth.tr,
                               style: AppTextStyles.body),
                           const SizedBox(height: 8),
-                          HVTextField(
-                            controller: controller.dateOfBirthController,
-                            validator: AppValidators.required(),
-                            hint: "01/01/1971",
-                            suffixIcon: const Icon(Icons.calendar_today),
-                          ),
 
+                          DatePickerField(
+                            controller: controller.dateOfBirthController,
+                            hintText: "Select Date Of Birth",
+                            validator: AppValidators.required(),
+
+                          )
+,
                           SizedBox(height: Dimensions.h(16)),
 
                           Text(AppStrings.gender.tr,

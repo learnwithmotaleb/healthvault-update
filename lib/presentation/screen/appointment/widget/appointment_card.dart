@@ -81,7 +81,7 @@ class AppointmentCard extends StatelessWidget {
             ),
             // Right Side Button
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+              padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
               decoration: BoxDecoration(
                 color: statusColor,
                 borderRadius: BorderRadius.circular(16),
@@ -90,7 +90,7 @@ class AppointmentCard extends StatelessWidget {
                 status,
                style: AppTextStyles.body.copyWith(
               color: AppColors.whiteColor,
-                 fontSize: 14
+                 fontSize: 10
               ),
               ),
             ),

@@ -109,14 +109,21 @@ class ApiUrl {
   static String getAllFavorite =  "$baseUrl/favorite/my-favorites";
 
 
+  //======================Terms and condition ===========================
+  static String getTermsAndCondition =  "$baseUrl/manage-Web/get-terms-conditions";
+  static String getFag =  "$baseUrl/manage-Web/get-faq";
+  static String privacyPolicy =  "$baseUrl/manage-Web/get-privacy-policy";
+
+
+
 
   //===========================Article===============================
   static String getAllArticle =  "$baseUrl/article";
+
   static String getSingeArticle(String id) =>  "$baseUrl/article/$id";
 
 
 
-<<<<<<< Updated upstream
   //========================================Provider profile =====================
   static String getProviderProfile =  "$baseUrl/user/getMe";
 
@@ -139,8 +146,6 @@ class ApiUrl {
   static String createAvailabilitySlot =  "$baseUrl/availability-slot/create-availability-slot";
   static String getProviderAvailability(String profileId) => "$baseUrl/availability-day/provider-availability/$profileId";
   static String deleteProviderAvailability = "$baseUrl/availability-slot/delete-availability-slot";
-=======
->>>>>>> Stashed changes
 
 
 

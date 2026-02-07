@@ -1,9 +1,12 @@
 import 'package:get/get.dart';
 
-class ProviderDetailsController extends GetxController{
+import '../../../../../service/api_service.dart';
+import '../../../../../service/api_url.dart';
+import '../model/model.dart';
 
+class ProviderDetailsController extends GetxController {
+  final ApiClient _apiClient = ApiClient();
 
-<<<<<<< Updated upstream
   var isLoading = false.obs;
   var appointment = Rxn<Data>(); // single appointment data
 
@@ -28,6 +31,4 @@ class ProviderDetailsController extends GetxController{
       isLoading.value = false;
     }
   }
-=======
->>>>>>> Stashed changes
 }

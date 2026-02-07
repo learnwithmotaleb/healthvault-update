@@ -1,11 +1,22 @@
 import 'package:get/get.dart';
+import 'package:healthvault/helper/tost_message/show_snackbar.dart';
 
-class ProviderProfileController extends GetxController{
+import '../../../../../service/api_service.dart';
+import '../../../../../service/api_url.dart';
+import '../model/provider_profile_model.dart';
 
+class ProviderProfileController extends GetxController {
+  final ApiClient _apiClient = ApiClient();
 
+  final isLoading = false.obs;
+  final profile = Rxn<ProviderProfileModel>();
 
+  @override
+  void onInit() {
+    super.onInit();
+    getProviderProfile();
+  }
 
-<<<<<<< Updated upstream
   Future<void> getProviderProfile() async {
     try {
       isLoading.value = true;
@@ -44,6 +55,4 @@ class ProviderProfileController extends GetxController{
     }
   }
 
-=======
->>>>>>> Stashed changes
 }
