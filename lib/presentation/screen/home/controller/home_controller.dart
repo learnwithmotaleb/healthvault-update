@@ -3,6 +3,7 @@ import '../../../../../service/api_service.dart';
 import '../../../../../service/api_url.dart';
 
 
+import '../../../../helper/local_db/local_db.dart';
 import '../../health_and_wellness_article/model/article_model.dart';
 import '../../profile/profile/model/user_profile_model.dart';
 import '../model/get_all_provider.dart' hide ProviderType;
@@ -137,6 +138,7 @@ class HomeController extends GetxController {
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
+     // await SharePrefsHelper.addFavoriteProvider(providerId);
       Get.snackbar("Success", "Added to favorites");
       return true;
     } else {

@@ -106,6 +106,39 @@ class SharePrefsHelper {
 
 
 
+  // ----------------- Favorite Providers -----------------
+
+  static Future<void> addFavoriteProvider(String id) async {
+    List<String> list =
+        _prefs?.getStringList(SharePrefsKeys.favoriteProviders) ?? [];
+
+    if (!list.contains(id)) {
+      list.add(id);
+      await _prefs?.setStringList(SharePrefsKeys.favoriteProviders, list);
+    }
+  }
+
+  static Future<void> removeFavoriteProvider(String id) async {
+    List<String> list =
+        _prefs?.getStringList(SharePrefsKeys.favoriteProviders) ?? [];
+
+    list.remove(id);
+    await _prefs?.setStringList(SharePrefsKeys.favoriteProviders, list);
+  }
+
+  static List<String> getFavoriteProviders() {
+    return _prefs?.getStringList(SharePrefsKeys.favoriteProviders) ?? [];
+  }
+
+  static bool isFavoriteProvider(String id) {
+    List<String> list =
+        _prefs?.getStringList(SharePrefsKeys.favoriteProviders) ?? [];
+    return list.contains(id);
+  }
+
+
+
+
   // ----------------- Clear All -----------------
   static Future<void> clearAll() async {
     await _prefs?.clear();

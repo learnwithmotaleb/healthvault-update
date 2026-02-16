@@ -124,8 +124,8 @@ class _PharmacyCardState extends State<PharmacyCard> {
                           },
                           icon: Icon(
                             isFavorite
-                                ? Icons.favorite
-                                : Icons.favorite_border,
+                                ? Icons.favorite_border
+                                : Icons.favorite,
                             color:AppColors.primaryColor,
                           ),
                         ),
