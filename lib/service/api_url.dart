@@ -25,7 +25,7 @@ class ApiUrl {
   static String verifyOtp = "$baseUrl/auth/verify-otp";
   static String resetPassword = "$baseUrl/auth/reset-password";
 
-  static const refreshToken = "/auth/refresh-token";
+  static String refreshToken = "$baseUrl/auth/refresh-token";
   static const getMeProvider = "/user/getMe";
   static const getMeAdmin = "/auth/admin/me";
 

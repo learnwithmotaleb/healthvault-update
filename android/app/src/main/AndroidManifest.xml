@@ -1,7 +1,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Internet (API, WebView, Socket) -->
+    <!-- Allow internet access -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
     <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- Access network state (e.g., check if connected via Wi-Fi or Mobile) -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+    <!-- Access Wi-Fi state (for info about Wi-Fi connections) -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+
+    <!-- Optional: Change Wi-Fi state (if your app toggles Wi-Fi) -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
 
     <!-- Camera (image_picker) -->
     <uses-permission android:name="android.permission.CAMERA"/>

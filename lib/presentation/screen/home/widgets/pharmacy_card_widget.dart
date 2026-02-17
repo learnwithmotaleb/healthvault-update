@@ -6,17 +6,15 @@ import '../../../../utils/app_text_style/app_text_style.dart';
 import '../../../../utils/assets_image/app_images.dart';
 import '../../../../utils/static_strings/static_strings.dart';
 
-
-class PharmacyCard extends StatefulWidget {
+class PharmacyCard extends StatelessWidget {  // ✅ StatelessWidget
   final String name;
   final String type;
   final String address;
   final String imagePath;
   final List<String> services;
-  final Map<String, String> availability; // e.g., {"Saturday": "6:30 PM - 10:30 PM"}
-
+  final Map<String, String> availability;
+  final bool isFavorite;           // ✅ from controller
   final VoidCallback? onFavoriteTap;
-
   final VoidCallback? onViewDetails;
 
   const PharmacyCard({
@@ -27,15 +25,10 @@ class PharmacyCard extends StatefulWidget {
     required this.imagePath,
     required this.services,
     required this.availability,
+    required this.isFavorite,
     this.onFavoriteTap,
     this.onViewDetails,
   });
-
-  @override
-  State<PharmacyCard> createState() => _PharmacyCardState();
-}
-class _PharmacyCardState extends State<PharmacyCard> {
-  bool isFavorite = false; // <-- move here, as a member of the state
 
   @override
   Widget build(BuildContext context) {
@@ -51,18 +44,20 @@ class _PharmacyCardState extends State<PharmacyCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
             /// ---------- TOP INFO ----------
             Padding(
               padding: const EdgeInsets.all(8),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+
                   /// IMAGE
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: Image.network(
-                      widget.imagePath,
-                      width: 100, // slightly smaller
+                      imagePath,
+                      width: 100,
                       height: 100,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
@@ -78,7 +73,7 @@ class _PharmacyCardState extends State<PharmacyCard> {
 
                   const SizedBox(width: 10),
 
-                  /// TEXT COLUMN + ICON
+                  /// TEXT + FAVORITE ICON
                   Expanded(
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,43 +85,29 @@ class _PharmacyCardState extends State<PharmacyCard> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  widget.name.tr,
+                                  name.tr,
                                   style: AppTextStyles.body.copyWith(
                                     color: AppColors.primaryColor,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
-                                Text(
-                                  widget.type.tr,
-                                  style: AppTextStyles.body,
-                                ),
+                                Text(type.tr, style: AppTextStyles.body),
                                 const SizedBox(height: 4),
-                                Text(
-                                  widget.address.tr,
-                                  style: AppTextStyles.hint,
-                                ),
+                                Text(address.tr, style: AppTextStyles.hint),
                               ],
                             ),
                           ),
                         ),
-                        /// FAVORITE ICON
+
+                        /// ✅ FAVORITE ICON — driven purely by controller
                         IconButton(
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
-                          onPressed: () {
-                            setState(() {
-                              isFavorite = !isFavorite; // toggle favorite
-                            });
-                            if (widget.onFavoriteTap != null) {
-                              widget.onFavoriteTap!();
-                            }
-                          },
+                          onPressed: onFavoriteTap != null ? () => onFavoriteTap!() : null,
                           icon: Icon(
-                            isFavorite
-                                ? Icons.favorite_border
-                                : Icons.favorite,
-                            color:AppColors.primaryColor,
+                            isFavorite ? Icons.favorite : Icons.favorite_border,
+                            color: isFavorite ? AppColors.primaryColor : AppColors.primaryColor,
                           ),
                         ),
                       ],
@@ -135,13 +116,13 @@ class _PharmacyCardState extends State<PharmacyCard> {
                 ],
               ),
             ),
+
+            /// ---------- SERVICES ----------
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(
                 AppStrings.service.tr,
-                style: AppTextStyles.title.copyWith(
-                  fontWeight: FontWeight.normal,
-                ),
+                style: AppTextStyles.title.copyWith(fontWeight: FontWeight.normal),
               ),
             ),
             const SizedBox(height: 6),
@@ -150,7 +131,7 @@ class _PharmacyCardState extends State<PharmacyCard> {
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 8),
-                itemCount: widget.services.length,
+                itemCount: services.length,
                 itemBuilder: (context, index) {
                   return Container(
                     margin: const EdgeInsets.only(right: 5),
@@ -160,7 +141,7 @@ class _PharmacyCardState extends State<PharmacyCard> {
                       color: AppColors.greyColor.withOpacity(0.5),
                       borderRadius: BorderRadius.circular(5),
                     ),
-                    child: Center(child: Text(widget.services[index])),
+                    child: Center(child: Text(services[index])),
                   );
                 },
               ),
@@ -175,18 +156,10 @@ class _PharmacyCardState extends State<PharmacyCard> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Row(
-                      children:  [
-                        Icon(
-                          Icons.calendar_month,
-                          size: 18,
-                          color: AppColors.primaryColor,
-                        ),
-                        SizedBox(width: 6),
-                        Text(
-                          AppStrings.availability.tr,
-
-                          style: AppTextStyles.body,
-                        ),
+                      children: [
+                        Icon(Icons.calendar_month, size: 18, color: AppColors.primaryColor),
+                        const SizedBox(width: 6),
+                        Text(AppStrings.availability.tr, style: AppTextStyles.body),
                       ],
                     ),
                   ),
@@ -196,10 +169,10 @@ class _PharmacyCardState extends State<PharmacyCard> {
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 8),
-                      itemCount: widget.availability.length,
+                      itemCount: availability.length,
                       itemBuilder: (context, index) {
-                        String day = widget.availability.keys.elementAt(index);
-                        String time = widget.availability[day]!;
+                        String day = availability.keys.elementAt(index);
+                        String time = availability[day]!;
                         return Container(
                           width: 220,
                           margin: const EdgeInsets.only(right: 5),
@@ -236,10 +209,9 @@ class _PharmacyCardState extends State<PharmacyCard> {
                   SizedBox(
                     width: double.infinity,
                     child: TextButton(
-                      onPressed: widget.onViewDetails ?? () {},
+                      onPressed: onViewDetails ?? () {},
                       child: Text(
                         AppStrings.viewDetails.tr,
-
                         style: AppTextStyles.hint.copyWith(
                           decoration: TextDecoration.underline,
                         ),
@@ -249,11 +221,10 @@ class _PharmacyCardState extends State<PharmacyCard> {
                 ],
               ),
             ),
-            // ... rest of your code unchanged
+
           ],
         ),
       ),
     );
   }
 }
-

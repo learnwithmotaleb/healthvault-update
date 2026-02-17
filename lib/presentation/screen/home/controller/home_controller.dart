@@ -138,7 +138,7 @@ class HomeController extends GetxController {
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-     // await SharePrefsHelper.addFavoriteProvider(providerId);
+
       Get.snackbar("Success", "Added to favorites");
       return true;
     } else {

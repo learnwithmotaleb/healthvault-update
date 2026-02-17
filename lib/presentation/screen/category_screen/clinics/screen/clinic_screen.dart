@@ -179,28 +179,7 @@ class ClinicScreen extends StatelessWidget {
       appBar:  CommonAppBar(title: AppStrings.clinics.tr),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: ListView.builder(
-          itemCount: clinicsData.length,
-          itemBuilder: (context, index) {
-            final clinic = clinicsData[index];
-
-            return PharmacyCard(
-              name: clinic["name"],
-              type: clinic["type"],
-              address: clinic["address"],
-              imagePath: clinic["image"],
-              services: List<String>.from(clinic["services"]),
-              availability:
-              Map<String, String>.from(clinic["availability"]),
-              onFavoriteTap: () {
-                debugPrint("Favorite: ${clinic["name"]}");
-              },
-              onViewDetails: () {
-                debugPrint("View Details: ${clinic["name"]}");
-              },
-            );
-          },
-        ),
+        child:Center(),
       ),
     );
   }

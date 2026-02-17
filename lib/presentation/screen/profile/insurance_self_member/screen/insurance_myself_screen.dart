@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:healthvault/helper/date_time_converter/date_time_converter.dart';
 import 'package:healthvault/presentation/widget/custom_appbar.dart';
+import 'package:healthvault/service/api_url.dart';
 import 'package:healthvault/utils/static_strings/static_strings.dart';
 
 import '../../../../../utils/app_colors/app_colors.dart';
-import '../../../../../utils/assets_image/app_images.dart';
 import '../controller/insurance_myself_controller.dart';
 import '../widget/insurance_bottomsheet_widget.dart';
 import '../widget/insurance_card_widget.dart';
@@ -49,12 +50,15 @@ class _InsuranceMyselfScreenState extends State<InsuranceMyselfScreen> {
             itemBuilder: (context, index) {
               final data = controller.insuranceSelfList[index];
 
+              final imageUrl = ApiUrl.buildImageUrl(data.insurancePhoto.toString());
+
+
               return InsuranceCard(
-                image: AppImages.motalebImage,
+                image: imageUrl,
                 insName: data.name ?? "N/A",
                 insNumber: data.number ?? "N/A",
                 provider: data.insuranceProvider ?? "N/A",
-                expDate: data.expiryDate ?? "N/A",
+                expDate: DateTimeHelper.dateTime(data.expiryDate ?? "N/A") ,
 
                 /// EDIT
                 onEdit: () {

@@ -9,7 +9,8 @@ class FavouriteScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(FavouriteController());
+    // ✅ Find existing instance — don't create a new one
+    final controller = Get.find<FavouriteController>();
 
     return Scaffold(
       appBar: CommonAppBar(title: "Favorites"),
@@ -28,22 +29,29 @@ class FavouriteScreen extends StatelessWidget {
           itemBuilder: (context, index) {
             final data = controller.favoriteList[index];
             final item = data.providerId;
-            if (item == null) return const SizedBox(); // Safety check
+            if (item == null) return const SizedBox();
 
-            // Here, we can use `isFavorite` dynamically
-            final isFavorite = true; // all items fetched from API are favorites
+            final providerId = item.sId ?? '';
 
             return CustomInfoCard(
               image: item.profileImage ?? '',
               title: item.fullName ?? 'No Name',
               subtitle: item.specialization ?? 'No Subtitle',
               address: item.address ?? 'No Address',
-              isFavorite: isFavorite,
+
+              // ✅ Read from controller — not hardcoded true
+              isFavorite: controller.isFavorite(providerId),
+
               onTap: () {
                 print("Clicked → ${item.fullName}");
               },
+
+              // ✅ Pass provider ID string — matches new toggleFavorite signature
               onFavoriteTap: () {
-                controller.toggleFavorite(data); // toggle favorite dynamically
+                controller.toggleFavorite(
+                  providerId,
+                  providerName: item.fullName,
+                );
               },
             );
           },

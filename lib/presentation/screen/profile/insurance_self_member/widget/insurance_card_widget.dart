@@ -51,10 +51,12 @@ class InsuranceCard extends StatelessWidget {
                   height: Dimensions.h(80),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(4),
-                    child: Image.asset(
+                    child: Image.network(
                       image!,
                       fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Icon(Icons.image_not_supported),
                     ),
+
                   ),
                 ),
 
@@ -65,9 +67,9 @@ class InsuranceCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      buildText("Ins Name: ", insName),
-                      buildText("Ins Number: ", insNumber),
-                      buildText("Ins Provider: ", provider),
+                      buildText("Insurance Name: ", insName),
+                      buildText("Insurance Number: ", insNumber),
+                      buildText("Insurance Provider: ", provider),
                       buildText("Exp Date: ", expDate),
                     ],
                   ),
@@ -109,8 +111,8 @@ class InsuranceCard extends StatelessWidget {
             TextSpan(
               text: label,
               style: AppTextStyles.body.copyWith(
-                fontWeight: FontWeight.bold,
                 fontSize: 12,
+                fontWeight: FontWeight.w600,
                 color: AppColors.blackColor,
               ),
             ),

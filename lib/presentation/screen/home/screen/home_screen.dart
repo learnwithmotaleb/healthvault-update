@@ -18,6 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/routes/route_path.dart';
 import '../../../../helper/local_db/local_db.dart';
 import '../../../../service/api_url.dart';
+import '../../profile/favourite_profile/controller/favourite_controller.dart';
 import '../widgets/category_card.dart';
 import '../widgets/emergency_card.dart';
 import '../widgets/pharmacy_card_widget.dart';
@@ -33,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController searchController = TextEditingController();
 
   final controller = Get.put(HomeController());
+  final controllerFavorite = Get.put(FavouriteController());
 
 
 
@@ -251,9 +253,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     imagePath: providerImage,
                     services: provider.services?.map((s) => s.title ?? "").toList() ?? [],
                     availability: availability,
-                    onFavoriteTap: () {
+                    // ✅ Read from controller using provider ID
+                    isFavorite: controllerFavorite.isFavorite(provider.id.toString()),
 
-                      controller.addFavorite(provider.id.toString());
+                    // ✅ Toggle using provider ID
+                    onFavoriteTap: () {
+                      controllerFavorite.toggleFavorite(provider.id.toString());
                     },
                     onViewDetails: () {
 
@@ -271,6 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
                     },
+
                   );
                 },
               );

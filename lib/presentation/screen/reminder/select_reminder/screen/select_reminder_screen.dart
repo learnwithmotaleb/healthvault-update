@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:healthvault/core/routes/route_path.dart';
+import 'package:healthvault/helper/date_time_converter/date_time_converter.dart';
 import 'package:healthvault/helper/tost_message/show_snackbar.dart';
 import 'package:healthvault/presentation/widget/custom_appbar.dart';
 import 'package:healthvault/utils/app_colors/app_colors.dart';
 import 'package:healthvault/utils/static_strings/static_strings.dart';
 
+import '../../../../widget/confermation_alert.dart';
 import '../controller/select_reminder_controller.dart';
 import '../widget/select_reminder_card.dart';
 
@@ -50,13 +52,8 @@ class _SelectReminderScreenState extends State<SelectReminderScreen> {
             child: ListView(
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
-                const SizedBox(height: 100),
-                Icon(
-                  Icons.notifications_off,
-                  size: 80,
-                  color: AppColors.greyColor,
-                ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 300),
+
                 Center(
                   child: Text(
                     "No reminders found",
@@ -88,23 +85,15 @@ class _SelectReminderScreenState extends State<SelectReminderScreen> {
                 timesPerDay: item.timesPerDay ?? 0,
                 schedule: item.schedule ?? "--",
                 times: item.times ?? [],
-                startDate: item.startDate ?? "--",
-                endDate: item.endDate ?? "--",
+                startDate: DateTimeHelper.date(item.startDate ?? "--"),
+                endDate: DateTimeHelper.date(item.endDate ?? "--"),
+
                 instructions: item.instructions ?? "--",
                 assignedTo: item.assignedTo ?? "--",
                   onDelete: () {
-                    // Show confirmation dialog
-                    Get.defaultDialog(
-                      title: "Delete Reminder",
-                      middleText: "Are you sure you want to delete this reminder?",
-                      textCancel: "Cancel",
-                      textConfirm: "Delete",
-                      confirmTextColor: AppColors.whiteColor,
-                      onConfirm: () {
-                        Get.back(); // Close dialog
-                        controller.deleteReminder(item.sId.toString());
-                      },
-                    );
+
+                    controller.deleteReminder(item.sId.toString());
+
                   },
 
                 onEdit: () {
@@ -112,6 +101,7 @@ class _SelectReminderScreenState extends State<SelectReminderScreen> {
                     RoutePath.editReminder,
                     arguments: {'id': item.sId.toString()},
                   )?.then((value) => _refreshReminders());
+                  print(item.sId.toString());
                 },
               );
             },

@@ -45,7 +45,11 @@ class DoctorScreen extends StatelessWidget {
 
             // Extract doctor details safely
             final user = (doctor["user"] as List<dynamic>?)?.first ?? {};
-            final servicesList = doctor["serviceId"] as List<dynamic>? ?? [];
+            final servicesList = doctor["services"] as List<dynamic>? ?? [];
+            final serviceTitles = servicesList
+                .map((s) => (s as Map<String, dynamic>)["title"]?.toString() ?? "")
+                .toList();
+
             final availability = <String, String>{};
 
             // Optional: If you have a real availability list in API, parse it here
@@ -55,13 +59,13 @@ class DoctorScreen extends StatelessWidget {
 
             return DoctorsCard(
               name: user["fullName"] ?? doctor["fullName"] ?? 'N/A',
-              type: doctor["displayName"] ?? 'N/A',
+              type: user["email"] ?? 'N/A',
               address: doctor["address"] ?? 'N/A',
               imagePath: doctor["identification_images"] != null &&
                   doctor["identification_images"].toString().isNotEmpty
                   ? ApiUrl.buildImageUrl(doctor["identification_images"])
                   : AppImages.appLogo,
-              services: servicesList.map((e) => e.toString()).toList(),
+              services: serviceTitles,
               availability: availability,
 
               onFavoriteTap: () {

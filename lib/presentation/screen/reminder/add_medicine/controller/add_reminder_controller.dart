@@ -129,7 +129,8 @@ class AddReminderController extends GetxController {
 
       if (res.statusCode == 200 && res.body["success"] == true) {
         AppSnackBar.success(title: "Health Vault","Reminder added successfully!");
-        Get.toNamed(RoutePath.bottomNav);
+
+
       } else {
         AppSnackBar.fail(title: "Health Vault", res.body["message"] ?? "Failed to add reminder");
       }

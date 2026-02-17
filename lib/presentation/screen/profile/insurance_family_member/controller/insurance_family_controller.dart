@@ -27,7 +27,7 @@ class InsuranceFamilyController extends GetxController {
   final ApiClient apiClient = ApiClient();
 
   RxBool isLoading = false.obs;
-  RxList<Data> insuranceFamilyList = <Data>[].obs;
+  RxList<InsuranceData> insuranceFamilyList = <InsuranceData>[].obs;
 
 
 

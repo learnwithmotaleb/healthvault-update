@@ -53,10 +53,10 @@ class HealthLogBottomSheet extends StatelessWidget {
 
             /// Input Fields
             _buildInput(controller.familyMemberName, AppStrings.healthLogName.tr),
-            _buildInput(controller.bloodPressure, "120/80", isNumber: false),
-            _buildInput(controller.heartRate, "72", isNumber: true),
-            _buildInput(controller.weight, "55", isNumber: true),
-            _buildInput(controller.bloodSugar, "2.8", isNumber: true),
+            _buildInput(controller.bloodPressure, "Blood-Pressure", isNumber: false),
+            _buildInput(controller.heartRate, "HeartRate", isNumber: true),
+            _buildInput(controller.weight, "Weight", isNumber: true),
+            _buildInput(controller.bloodSugar, "Blood-Sugar", isNumber: true),
 
             SizedBox(height: Dimensions.h(20)),
 

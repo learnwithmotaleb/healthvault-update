@@ -1,19 +1,20 @@
+
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
-import 'package:get/get.dart';
-import 'package:healthvault/presentation/screen/profile/insurance_self_member/model/my_self_model.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
+import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../../helper/local_db/local_db.dart';
 import '../../../../../helper/tost_message/show_snackbar.dart';
 import '../../../../../service/api_service.dart';
 import '../../../../../service/api_url.dart';
-import '../../../appointment/model/my_appointment_model.dart' hide Data;
+import '../model/my_self_model.dart';
 
-
-class InsuranceMyselfController extends GetxController{
-
+class InsuranceMyselfController extends GetxController {
   final name = TextEditingController();
   final number = TextEditingController();
   final provider = TextEditingController();
@@ -23,14 +24,11 @@ class InsuranceMyselfController extends GetxController{
 
   final forWhom = "SELF";
 
-
-
   final ApiClient apiClient = ApiClient();
 
   RxBool isLoading = false.obs;
-  RxList<Data> insuranceSelfList = <Data>[].obs;
 
-
+  RxList<InsuranceData> insuranceSelfList = <InsuranceData>[].obs;
 
   final ImagePicker _picker = ImagePicker();
 
@@ -48,8 +46,6 @@ class InsuranceMyselfController extends GetxController{
       AppSnackBar.fail("Failed to pick image: $e");
     }
   }
-
-
 
   @override
   void onInit() {
@@ -91,7 +87,6 @@ class InsuranceMyselfController extends GetxController{
     }
   }
 
-
   /// POST Insurance API
   Future<void> addInsurance() async {
     if (insurancePhoto.value == null) {
@@ -122,14 +117,16 @@ class InsuranceMyselfController extends GetxController{
         fields: fields,
         files: insurancePhoto.value != null
             ? [
-          MultipartFileData(
-            key: "insurance_Photo",
-            path: insurancePhoto.value!.path,
-          )
-        ]
+                MultipartFileData(
+                  key: "insurance_Photo",
+                  path: insurancePhoto.value!.path,
+                ),
+              ]
             : [],
         isBasic: false,
-        customHeaders: {"Authorization": await SharePrefsHelper.getToken() ?? ""},
+        customHeaders: {
+          "Authorization": SharePrefsHelper.getToken() ?? "",
+        },
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -152,7 +149,6 @@ class InsuranceMyselfController extends GetxController{
       isLoading.value = false;
     }
   }
-
 
   Future<void> updateInsurance(String id) async {
     if (name.text.isEmpty ||
@@ -196,9 +192,6 @@ class InsuranceMyselfController extends GetxController{
     }
   }
 
-
-
-
   /// DELETE Insurance API
   Future<void> deleteInsurance(String id) async {
     try {
@@ -222,19 +215,10 @@ class InsuranceMyselfController extends GetxController{
     }
   }
 
-
-
-
-
-
-
-
   /// =====================================
   ///        Pull to Refresh
   /// =====================================
   Future<void> refreshInsurance() async {
     await getInsuranceSelfList();
   }
-
-
 }

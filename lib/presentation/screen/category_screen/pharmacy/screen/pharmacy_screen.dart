@@ -184,28 +184,7 @@ class _PharmacyScreenState extends State<PharmacyScreen> {
       appBar:  CommonAppBar(title: AppStrings.pharmacy.tr),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: ListView.builder(
-          itemCount: pharmacyData.length,
-          itemBuilder: (context, index) {
-            final pharmacy = pharmacyData[index];
-
-            return PharmacyCard(
-              name: pharmacy["name"],
-              type: pharmacy["type"],
-              address: pharmacy["address"],
-              imagePath: pharmacy["image"],
-              services: List<String>.from(pharmacy["services"]),
-              availability:
-              Map<String, String>.from(pharmacy["availability"]),
-              onFavoriteTap: () {
-                debugPrint("Favorite: ${pharmacy["name"]}");
-              },
-              onViewDetails: () {
-                debugPrint("View Details: ${pharmacy["name"]}");
-              },
-            );
-          },
-        ),
+        child:Center()
       ),
     );
   }

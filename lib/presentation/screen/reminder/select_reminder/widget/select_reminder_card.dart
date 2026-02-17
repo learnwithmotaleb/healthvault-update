@@ -150,7 +150,7 @@ class _ReminderCardState extends State<ReminderCard>
                         const Text('100%'),
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 5),
 
                     LinearProgressIndicator(
                       value: progress,
@@ -164,7 +164,7 @@ class _ReminderCardState extends State<ReminderCard>
                   ],
                 ),
               ),
-              SizedBox(width: Dimensions.w(10)),
+              SizedBox(width: Dimensions.w(5)),
               Row(
                 children: [
                   IconButton(
@@ -192,14 +192,22 @@ class _ReminderCardState extends State<ReminderCard>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildRichText("Pill Name", widget.pillName),
+              SizedBox(height: Dimensions.h(3),),
               _buildRichText("Dosage", widget.dosage),
+              SizedBox(height: Dimensions.h(3),),
               _buildRichText(
                   "Times per day", "${widget.timesPerDay} times"),
+              SizedBox(height: Dimensions.h(3),),
               _buildRichText("Schedule", widget.schedule),
+              SizedBox(height: Dimensions.h(3),),
               _buildRichText("Times", widget.times.join(" | ")),
+              SizedBox(height: Dimensions.h(3),),
               _buildRichText("Start Date", widget.startDate),
+              SizedBox(height: Dimensions.h(3),),
               _buildRichText("End Date", widget.endDate),
+              SizedBox(height: Dimensions.h(3),),
               _buildRichText("Instructions", widget.instructions),
+              SizedBox(height: Dimensions.h(3),),
               _buildRichText("Assigned to", widget.assignedTo),
             ],
           ),

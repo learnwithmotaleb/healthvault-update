@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:get/get.dart';
+import 'package:healthvault/core/routes/route_path.dart';
 import 'package:healthvault/helper/tost_message/show_snackbar.dart';
+import 'package:healthvault/service/api_url.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
@@ -52,7 +54,58 @@ class ApiClient {
 
 
   /// ---------------- Master Request Handler ---------------------
-  /// ---------------- Master Request Handler ---------------------
+  // /// ---------------- Master Request Handler ---------------------
+  // Future<ApiResult> safeRequest(
+  //     Future<http.Response> Function() requestFn, {
+  //       required String url,
+  //       String method = "GET",
+  //       bool checkInternet = true,
+  //     }) async {
+  //   try {
+  //     _logRequest(url, method);
+  //
+  //     // Optional: check internet before request
+  //     if (checkInternet && Get.isRegistered<InternetController>()) {
+  //       final controller = Get.find<InternetController>();
+  //       if (!controller.isConnected.value) {
+  //         return _handleException("No internet connection!");
+  //       }
+  //     }
+  //
+  //     final response = await requestFn().timeout(defaultTimeout);
+  //
+  //     // Update internet status on success
+  //     if (Get.isRegistered<InternetController>()) {
+  //       Get.find<InternetController>().setConnected();
+  //     }
+  //
+  //     return _handleResponse(response);
+  //   }
+  //
+  //   // No internet
+  //   on SocketException {
+  //     if (Get.isRegistered<InternetController>()) {
+  //       Get.find<InternetController>().setDisconnected();
+  //     }
+  //     return _handleException("No internet connection!");
+  //   }
+  //
+  //   // Timeout
+  //   on TimeoutException {
+  //     return _handleException("Request timeout. Please try again.");
+  //   }
+  //
+  //   // Client error
+  //   on http.ClientException catch (e) {
+  //     return _handleException("Client error: ${e.message}");
+  //   }
+  //
+  //   // Unknown error
+  //   catch (e) {
+  //     return _handleException("Unexpected error: $e");
+  //   }
+  // }
+
   Future<ApiResult> safeRequest(
       Future<http.Response> Function() requestFn, {
         required String url,
@@ -70,39 +123,42 @@ class ApiClient {
         }
       }
 
-      final response = await requestFn().timeout(defaultTimeout);
+      http.Response response = await requestFn().timeout(defaultTimeout);
 
-      // Update internet status on success
+      // 401 Unauthorized -> refresh token
+      if (response.statusCode == 401) {
+        final refreshed = await _refreshToken();
+        if (refreshed) {
+          // Retry the same request with new token
+          response = await requestFn().timeout(defaultTimeout);
+          return _handleResponse(response);
+        } else {
+          // Logout user if refresh fails
+          await SharePrefsHelper.clearAll();
+          if (Get.context != null) Get.offAllNamed(RoutePath.login);
+          return _handleException("Session expired. Please login again.");
+        }
+      }
+
+      // Update internet status
       if (Get.isRegistered<InternetController>()) {
         Get.find<InternetController>().setConnected();
       }
 
       return _handleResponse(response);
-    }
 
-    // No internet
-    on SocketException {
+    } on SocketException {
       if (Get.isRegistered<InternetController>()) {
         Get.find<InternetController>().setDisconnected();
       }
       return _handleException("No internet connection!");
-    }
-
-    // Timeout
-    on TimeoutException {
+    } on TimeoutException {
       return _handleException("Request timeout. Please try again.");
-    }
-
-    // Client error
-    on http.ClientException catch (e) {
-      return _handleException("Client error: ${e.message}");
-    }
-
-    // Unknown error
-    catch (e) {
+    } catch (e) {
       return _handleException("Unexpected error: $e");
     }
   }
+
 
 
   /// ---------------- Response Handler ---------------------------
@@ -193,6 +249,37 @@ class ApiClient {
       method: "POST",
     );
   }
+
+  Future<bool> _refreshToken() async {
+    final refreshToken = SharePrefsHelper.getRefreshToken();
+    if (refreshToken == null) return false;
+
+    final url = ApiUrl.refreshToken; // replace with your API
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"refresh_token": refreshToken}),
+      ).timeout(defaultTimeout);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        await SharePrefsHelper.saveToken(data['access_token']);
+        if (data.containsKey('refresh_token')) {
+          await SharePrefsHelper.saveRefreshToken(data['refresh_token']);
+        }
+        return true;
+      } else {
+        await SharePrefsHelper.clearAll(); // logout
+        return false;
+      }
+    } catch (e) {
+      await SharePrefsHelper.clearAll(); // logout
+      return false;
+    }
+  }
+
 
 
   Future<ApiResult> put({

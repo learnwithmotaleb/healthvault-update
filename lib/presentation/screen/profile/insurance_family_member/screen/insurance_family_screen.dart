@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:healthvault/presentation/widget/custom_appbar.dart';
 import 'package:healthvault/utils/static_strings/static_strings.dart';
 
+import '../../../../../helper/date_time_converter/date_time_converter.dart';
+import '../../../../../service/api_url.dart';
 import '../../../../../utils/app_colors/app_colors.dart';
 import '../../../../../utils/assets_image/app_images.dart';
 
@@ -43,13 +45,15 @@ class InsuranceFamilyScreen extends StatelessWidget {
             itemCount: controller.insuranceFamilyList.length,
             itemBuilder: (context, index) {
               final data = controller.insuranceFamilyList[index];
+              final imageUrl = ApiUrl.buildImageUrl(data.insurancePhoto.toString());
+
 
               return InsuranceCard(
-                image: AppImages.motalebImage,
+                image: imageUrl,
                 insName: data.name ?? "N/A",
                 insNumber: data.number ?? "N/A",
                 provider: data.insuranceProvider ?? "N/A",
-                expDate: data.expiryDate ?? "N/A",
+                expDate: DateTimeHelper.dateTime(data.expiryDate ?? "N/A") ,
 
                 /// EDIT
                 onEdit: () {
