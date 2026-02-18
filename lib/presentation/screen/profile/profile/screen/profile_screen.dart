@@ -232,7 +232,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 icon: Icons.library_books_sharp,
                 title: AppStrings.document.tr,
                 onTap: () {
-                  Get.toNamed(RoutePath.document);
+                  Get.toNamed(RoutePath.addDocument);
                 },
               ),
 

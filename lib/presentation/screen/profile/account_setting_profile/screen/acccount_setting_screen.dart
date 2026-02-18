@@ -8,10 +8,13 @@ import '../../../../../core/routes/route_path.dart';
 import '../../../../../utils/app_colors/app_colors.dart';
 import '../../../../../utils/static_strings/static_strings.dart';
 import '../../../../widget/confermation_alert.dart';
+import '../controller/account_setting_controller.dart';
 import '../widget/account_setting_widget.dart';
 
 class AccountSettingScreen extends StatelessWidget {
-  const AccountSettingScreen({super.key});
+   AccountSettingScreen({super.key});
+
+  final controller = Get.put(AccountSettingController());
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +63,8 @@ class AccountSettingScreen extends StatelessWidget {
                   title: AppStrings.deleteAccount.tr,
                   body: AppStrings.areYouSureYouWantToDelete.tr,
                   onYes: () {
-                    Get.toNamed(RoutePath.login);
+                    Get.back(); // close dialog
+                    controller.deleteAccount(); // call API
 
                   },
                   onNo: () {

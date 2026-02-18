@@ -7,13 +7,22 @@ import 'package:healthvault/utils/static_strings/static_strings.dart';
 import '../../../../../utils/app_colors/app_colors.dart';
 import '../../../../widget/custom_appbar.dart';
 import '../../../../widget/hv_text_field.dart';
+import '../../../profile/favourite_profile/controller/favourite_controller.dart';
 import '../controller/search_controller.dart';
 import '../widget/search_list_card.dart';
 
-class SearchScreen extends StatelessWidget {
+class SearchScreen extends StatefulWidget {
   SearchScreen({super.key});
 
+  @override
+  State<SearchScreen> createState() => _SearchScreenState();
+}
+
+class _SearchScreenState extends State<SearchScreen> {
   final SearchController controller = Get.put(SearchController());
+
+  // ✅ Find shared instance — don't create new one
+  final controllerFavorite = Get.find<FavouriteController>();
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +67,7 @@ class SearchScreen extends StatelessWidget {
 
             SizedBox(height: Dimensions.h(20)),
 
-            /// SEARCH RESULT
+            /// SEARCH RESULTS
             Expanded(
               child: Obx(() {
                 if (controller.filteredList.isEmpty) {
@@ -76,6 +85,9 @@ class SearchScreen extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final item = controller.filteredList[index];
 
+                    // ✅ Get the correct provider ID (adjust field name based on your model)
+                    final providerId = item.sId ?? item.providerTypeId?.toString() ?? '';
+
                     return SearchListCard(
                       name: item.fullName ?? "",
                       type: item.providerType?.label ?? "",
@@ -83,17 +95,22 @@ class SearchScreen extends StatelessWidget {
                       imagePath: item.profileImage != null && item.profileImage!.isNotEmpty
                           ? "${ApiUrl.mainDomain}/${item.profileImage!.replaceAll(r'\', '/')}"
                           : "",
-
                       services: item.services?.map((s) => s.title ?? "").toList() ?? [],
-                      onFavoriteTap: () async {
-                        // Call controller method
-                        final success = await controller.addFavorite(item.sId!);
-                        if (success) {
-                          // Optionally: update local favorite state in UI
-                          debugPrint("Favorite added: ${item.fullName}");
-                        }
-                      },
 
+                      // ✅ Check using actual provider ID
+                      isFavorite: controllerFavorite.isFavorite(providerId),
+
+                      // ✅ Toggle using provider ID with name
+                      onFavoriteTap: () {
+                        controllerFavorite.toggleFavorite(
+                          providerId,
+                          providerName: item.fullName,
+                        );
+                        // ✅ No setState needed — Obx handles it
+                        setState(() {
+
+                        });
+                      },
                     );
                   },
                 );

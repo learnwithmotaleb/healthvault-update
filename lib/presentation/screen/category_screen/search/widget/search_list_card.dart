@@ -4,14 +4,15 @@ import '../../../../../utils/app_colors/app_colors.dart';
 import '../../../../../utils/app_text_style/app_text_style.dart';
 
 
-class SearchListCard extends StatefulWidget {
+class SearchListCard extends StatelessWidget {
   final String name;
   final String type;
   final String address;
   final String imagePath;
   final List<String> services;
-
+  final bool isFavorite;
   final VoidCallback? onFavoriteTap;
+  final VoidCallback? onViewDetails;
 
 
   const SearchListCard({
@@ -22,13 +23,9 @@ class SearchListCard extends StatefulWidget {
     required this.imagePath,
     required this.services,
     this.onFavoriteTap,
+    required this.isFavorite,
+    this.onViewDetails,
   });
-
-  @override
-  State<SearchListCard> createState() => _SearchListCardState();
-}
-class _SearchListCardState extends State<SearchListCard> {
-  bool isFavorite = false;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +47,6 @@ class _SearchListCardState extends State<SearchListCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   /// IMAGE
-                  /// IMAGE
                   Expanded(
                     flex: 2,
                     child: Center(
@@ -58,9 +54,9 @@ class _SearchListCardState extends State<SearchListCard> {
                         borderRadius: BorderRadius.circular(8), // smoother edges
                         child: AspectRatio(
                           aspectRatio: 1, // keep it square
-                          child: widget.imagePath.isNotEmpty
+                          child: imagePath.isNotEmpty
                               ? Image.network(
-                            widget.imagePath,
+                            imagePath,
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) => Container(
                               color: AppColors.greyColor.withOpacity(0.3),
@@ -103,39 +99,36 @@ class _SearchListCardState extends State<SearchListCard> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    widget.name,
+                                    name,
                                     style: AppTextStyles.body.copyWith(
                                       color: AppColors.primaryColor,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   const SizedBox(height: 2),
-                                  Text(widget.type,
+                                  Text(type,
                                       style: AppTextStyles.body),
                                   const SizedBox(height: 4),
-                                  Text(widget.address,
+                                  Text(address,
                                       style: AppTextStyles.hint),
                                 ],
                               ),
                             ),
+                            /// ✅ FAVORITE ICON — driven purely by controller
                             IconButton(
                               padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                              onPressed: () {
-                                setState(() {
-                                  isFavorite = !isFavorite;
-                                });
-                                widget.onFavoriteTap?.call();
-                              },
+                              constraints: BoxConstraints(),
+                              onPressed: onFavoriteTap != null
+                                  ? () => onFavoriteTap!()
+                                  : null,
                               icon: Icon(
                                 isFavorite
                                     ? Icons.favorite
                                     : Icons.favorite_border,
-                                color: isFavorite
-                                    ? AppColors.primaryColor
-                                    : AppColors.primaryColor,
+                                color: AppColors.primaryColor,
                               ),
                             ),
+
 
                           ],
                         ),
@@ -149,7 +142,7 @@ class _SearchListCardState extends State<SearchListCard> {
                           height:  Dimensions.w(25),
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            itemCount: widget.services.length,
+                            itemCount: services.length,
                             itemBuilder: (context, index) {
                               return Container(
                                 margin: const EdgeInsets.only(right: 5),
@@ -161,7 +154,7 @@ class _SearchListCardState extends State<SearchListCard> {
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(horizontal: 2.0,vertical: 2.0),
                                     child: Text(
-                                      widget.services[index],
+                                      services[index],
                                       style: AppTextStyles.hint.copyWith(
                                         fontSize: 12
                                       ),

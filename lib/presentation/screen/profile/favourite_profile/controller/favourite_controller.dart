@@ -63,10 +63,8 @@ class FavouriteController extends GetxController {
     }
   }
 
-  /// Add favorite with optimistic update + rollback on failure
   Future<void> _addFavorite(String providerId, {String? providerName}) async {
-    // ✅ Optimistic update — UI changes instantly
-    // ✅ Reassign .value so Obx detects the change (not .add())
+    // ✅ Reassign .value to trigger Obx
     favoriteIds.value = {...favoriteIds, providerId};
 
     try {
@@ -76,33 +74,28 @@ class FavouriteController extends GetxController {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // Refresh full list to get complete Data object
-        fetchFavorites();
+        fetchFavorites(); // refresh full list
         Get.snackbar('Success', '${providerName ?? 'Provider'} added to favorites');
       } else {
-        // ✅ Rollback on failure
+        // Rollback
         favoriteIds.value = favoriteIds.where((id) => id != providerId).toSet();
         Get.snackbar('Error', response.body['message'] ?? 'Failed to add favorite');
       }
     } catch (e) {
-      // ✅ Rollback on error
+      // Rollback
       favoriteIds.value = favoriteIds.where((id) => id != providerId).toSet();
       Get.snackbar('Error', 'Failed to add favorite: $e');
     }
   }
 
-  /// Remove favorite with optimistic update + rollback on failure
   Future<void> _removeFavorite(String providerId, {String? providerName}) async {
-    // ✅ Optimistic update
+    // ✅ Reassign .value to trigger Obx
     favoriteIds.value = favoriteIds.where((id) => id != providerId).toSet();
 
-    // Keep removed item in case we need to rollback
     final removedItem = favoriteList.firstWhereOrNull(
           (d) => d.providerId?.sId == providerId,
     );
-    if (removedItem != null) {
-      favoriteList.remove(removedItem);
-    }
+    if (removedItem != null) favoriteList.remove(removedItem);
 
     try {
       final response = await apiClient.delete(
@@ -113,13 +106,13 @@ class FavouriteController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 204) {
         Get.snackbar('Removed', '${providerName ?? 'Provider'} removed from favorites');
       } else {
-        // ✅ Rollback on failure
+        // Rollback
         favoriteIds.value = {...favoriteIds, providerId};
         if (removedItem != null) favoriteList.add(removedItem);
         Get.snackbar('Error', response.body['message'] ?? 'Failed to remove favorite');
       }
     } catch (e) {
-      // ✅ Rollback on error
+      // Rollback
       favoriteIds.value = {...favoriteIds, providerId};
       if (removedItem != null) favoriteList.add(removedItem);
       Get.snackbar('Error', 'Failed to remove favorite: $e');

@@ -3,13 +3,14 @@ import '../../../../../core/responsive_layout/dimensions/dimensions.dart';
 import '../../../../../utils/app_colors/app_colors.dart';
 import '../../../../../utils/app_text_style/app_text_style.dart';
 
-class DoctorsCard extends StatefulWidget {
+class DoctorsCard extends StatelessWidget {  // ✅ StatelessWidget
   final String name;
   final String type;
   final String address;
   final String imagePath;
   final List<String> services;
-  final Map<String, String> availability; // e.g., {"Saturday": "6:30 PM - 10:30 PM"}
+  final Map<String, String> availability;
+  final bool isFavorite;           // ✅ from controller
   final VoidCallback? onFavoriteTap;
   final VoidCallback? onViewDetails;
 
@@ -21,16 +22,10 @@ class DoctorsCard extends StatefulWidget {
     required this.imagePath,
     required this.services,
     required this.availability,
+    required this.isFavorite,      // ✅ required
     this.onFavoriteTap,
     this.onViewDetails,
   });
-
-  @override
-  State<DoctorsCard> createState() => _DoctorsCardState();
-}
-
-class _DoctorsCardState extends State<DoctorsCard> {
-  bool isFavorite = false;
 
   @override
   Widget build(BuildContext context) {
@@ -55,9 +50,9 @@ class _DoctorsCardState extends State<DoctorsCard> {
                   /// IMAGE
                   ClipRRect(
                     borderRadius: BorderRadius.circular(5),
-                    child: widget.imagePath.startsWith('http')
+                    child: imagePath.startsWith('http')
                         ? Image.network(
-                      widget.imagePath,
+                      imagePath,
                       width: 116,
                       height: 98,
                       fit: BoxFit.cover,
@@ -75,7 +70,7 @@ class _DoctorsCardState extends State<DoctorsCard> {
                       },
                     )
                         : Image.asset(
-                      widget.imagePath,
+                      imagePath,
                       width: 116,
                       height: 98,
                       fit: BoxFit.cover,
@@ -95,42 +90,29 @@ class _DoctorsCardState extends State<DoctorsCard> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  widget.name,
+                                  name,
                                   style: AppTextStyles.body.copyWith(
                                     color: AppColors.primaryColor,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 const SizedBox(height: 2),
-                                Text(
-                                  widget.type,
-                                  style: AppTextStyles.body,
-                                ),
+                                Text(type, style: AppTextStyles.body),
                                 const SizedBox(height: 4),
-                                Text(
-                                  widget.address,
-                                  style: AppTextStyles.hint,
-                                ),
+                                Text(address, style: AppTextStyles.hint),
                               ],
                             ),
                           ),
                         ),
 
-                        /// FAVORITE ICON
+                        /// ✅ FAVORITE ICON — driven by controller
                         IconButton(
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
-                          onPressed: () {
-                            setState(() {
-                              isFavorite = !isFavorite;
-                            });
-                            widget.onFavoriteTap?.call();
-                          },
+                          onPressed: onFavoriteTap != null ? () => onFavoriteTap!() : null,
                           icon: Icon(
-                            isFavorite
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            color:AppColors.primaryColor,
+                            isFavorite ? Icons.favorite : Icons.favorite_border,
+                            color: AppColors.primaryColor,
                           ),
                         ),
                       ],
@@ -141,36 +123,33 @@ class _DoctorsCardState extends State<DoctorsCard> {
             ),
 
             /// ---------- SERVICES ----------
-            if (widget.services.isNotEmpty)
+            if (services.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Text(
                   "Services",
-                  style: AppTextStyles.title.copyWith(
-                    fontWeight: FontWeight.normal,
-                  ),
+                  style: AppTextStyles.title.copyWith(fontWeight: FontWeight.normal),
                 ),
               ),
             const SizedBox(height: 6),
-            if (widget.services.isNotEmpty)
+            if (services.isNotEmpty)
               SizedBox(
                 height: 30,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 8),
-                  itemCount: widget.services.length,
+                  itemCount: services.length,
                   itemBuilder: (context, index) {
                     return Container(
                       margin: const EdgeInsets.only(right: 5),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 5),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                       decoration: BoxDecoration(
                         color: AppColors.greyColor.withOpacity(0.5),
                         borderRadius: BorderRadius.circular(5),
                       ),
                       child: Center(
                         child: Text(
-                          widget.services[index],
+                          services[index],
                           style: AppTextStyles.body.copyWith(fontSize: 12),
                         ),
                       ),
@@ -181,7 +160,7 @@ class _DoctorsCardState extends State<DoctorsCard> {
             const SizedBox(height: 12),
 
             /// ---------- AVAILABILITY ----------
-            if (widget.availability.isNotEmpty)
+            if (availability.isNotEmpty)
               Container(
                 color: AppColors.primaryColor.withOpacity(0.1),
                 padding: const EdgeInsets.symmetric(vertical: 8),
@@ -191,16 +170,9 @@ class _DoctorsCardState extends State<DoctorsCard> {
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: Row(
                         children: const [
-                          Icon(
-                            Icons.calendar_month,
-                            size: 18,
-                            color: AppColors.primaryColor,
-                          ),
+                          Icon(Icons.calendar_month, size: 18, color: AppColors.primaryColor),
                           SizedBox(width: 6),
-                          Text(
-                            "Availability",
-                            style: AppTextStyles.body,
-                          ),
+                          Text("Availability", style: AppTextStyles.body),
                         ],
                       ),
                     ),
@@ -210,10 +182,10 @@ class _DoctorsCardState extends State<DoctorsCard> {
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.symmetric(horizontal: 8),
-                        itemCount: widget.availability.length,
+                        itemCount: availability.length,
                         itemBuilder: (context, index) {
-                          String day = widget.availability.keys.elementAt(index);
-                          String time = widget.availability[day]!;
+                          String day = availability.keys.elementAt(index);
+                          String time = availability[day]!;
                           return Container(
                             width: 220,
                             margin: const EdgeInsets.only(right: 5),
@@ -250,7 +222,7 @@ class _DoctorsCardState extends State<DoctorsCard> {
                     SizedBox(
                       width: double.infinity,
                       child: TextButton(
-                        onPressed: widget.onViewDetails ?? () {},
+                        onPressed: onViewDetails ?? () {},
                         child: Text(
                           "View Details",
                           style: AppTextStyles.hint.copyWith(

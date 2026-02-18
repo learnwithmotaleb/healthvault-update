@@ -1,67 +1,63 @@
 class ImageModel {
-  bool? success;
-  String? message;
-  int? statusCode;
-  Data? data;
+  final bool? success;
+  final String? message;
+  final int? statusCode;
+  final ImageData? data;
 
-  ImageModel({this.success, this.message, this.statusCode, this.data});
+  ImageModel({
+    this.success,
+    this.message,
+    this.statusCode,
+    this.data,
+  });
 
-  ImageModel.fromJson(Map<String, dynamic> json) {
-    success = json['success'];
-    message = json['message'];
-    statusCode = json['statusCode'];
-    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
-  }
+  factory ImageModel.fromJson(Map<String, dynamic> json) => ImageModel(
+    success: json['success'],
+    message: json['message'],
+    statusCode: json['statusCode'],
+    data: json['data'] != null ? ImageData.fromJson(json['data']) : null,
+  );
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['success'] = this.success;
-    data['message'] = this.message;
-    data['statusCode'] = this.statusCode;
-    if (this.data != null) {
-      data['data'] = this.data!.toJson();
-    }
-    return data;
-  }
+  Map<String, dynamic> toJson() => {
+    'success': success,
+    'message': message,
+    'statusCode': statusCode,
+    'data': data?.toJson(),
+  };
 }
 
-class Data {
-  String? sId;
-  String? normalUserId;
-  List<String>? medicalMySelfImage;
-  List<String>? medicalFamilyImage;
-  String? createdAt;
-  String? updatedAt;
-  int? iV;
+class ImageData {
+  final String? id;
+  final String? normalUserId;
+  final List<String>? medicalMySelfImage;
+  final List<String>? medicalFamilyImage;
+  final String? updatedAt;
 
-  Data(
-      {this.sId,
-        this.normalUserId,
-        this.medicalMySelfImage,
-        this.medicalFamilyImage,
-        this.createdAt,
-        this.updatedAt,
-        this.iV});
+  ImageData({
+    this.id,
+    this.normalUserId,
+    this.medicalMySelfImage,
+    this.medicalFamilyImage,
+    this.updatedAt,
+  });
 
-  Data.fromJson(Map<String, dynamic> json) {
-    sId = json['_id'];
-    normalUserId = json['normalUserId'];
-    medicalMySelfImage = json['medical_mySelf_image'].cast<String>();
-    medicalFamilyImage = json['medical_family_image'].cast<String>();
-    createdAt = json['createdAt'];
-    updatedAt = json['updatedAt'];
-    iV = json['__v'];
-  }
+  factory ImageData.fromJson(Map<String, dynamic> json) => ImageData(
+    id: json['_id'],
+    normalUserId: json['normalUserId'],
+    medicalMySelfImage: json['medical_mySelf_image'] != null
+        ? List<String>.from(json['medical_mySelf_image'])
+        : [],
+    medicalFamilyImage: json['medical_family_image'] != null
+        ? List<String>.from(json['medical_family_image'])
+        : [],
+    updatedAt: json['updatedAt'],
+  );
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['_id'] = this.sId;
-    data['normalUserId'] = this.normalUserId;
-    data['medical_mySelf_image'] = this.medicalMySelfImage;
-    data['medical_family_image'] = this.medicalFamilyImage;
-    data['createdAt'] = this.createdAt;
-    data['updatedAt'] = this.updatedAt;
-    data['__v'] = this.iV;
-    return data;
-  }
+  Map<String, dynamic> toJson() => {
+    '_id': id,
+    'normalUserId': normalUserId,
+    'medical_mySelf_image': medicalMySelfImage,
+    'medical_family_image': medicalFamilyImage,
+    'updatedAt': updatedAt,
+  };
 }

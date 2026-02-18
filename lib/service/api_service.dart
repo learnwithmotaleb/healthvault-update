@@ -525,6 +525,66 @@ class ApiClient {
 
 
 
+  // ── ADD THIS METHOD inside your ApiClient class ──────────────────────────────
+
+  /// PUT request with a single file (multipart/form-data)
+  /// Used for uploading medical images via PUT endpoint.
+  Future<ApiResult> putMultipart({
+    required String url,
+    required String fileKey,
+    required File file,
+    Map<String, String> fields = const {},
+    bool isBasic = false,
+    bool isToken = false,       // ✅ use this
+    Map<String, String>? customHeaders,
+  }) async {
+    try {
+      _logRequest(url, "MULTIPART PUT");
+
+      // ✅ Token is now correctly added via _headers with Bearer prefix
+      final headers = await _headers(
+        isBasic: isBasic,
+        isToken: isToken,
+        customHeaders: customHeaders,
+      );
+
+      log.i("[MULTIPART PUT] Headers: $headers");
+
+      final request = http.MultipartRequest("PUT", Uri.parse(url));
+      request.headers.addAll(headers);
+
+      if (fields.isNotEmpty) request.fields.addAll(fields);
+
+      if (file.existsSync()) {
+        final mimeTypeData =
+            lookupMimeType(file.path)?.split('/') ?? ['application', 'octet-stream'];
+
+        log.i("[MULTIPART PUT] Attaching file: ${file.path} (${file.lengthSync()} bytes)");
+
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            fileKey,
+            file.path,
+            contentType: MediaType(mimeTypeData[0], mimeTypeData[1]),
+          ),
+        );
+      } else {
+        log.e("[MULTIPART PUT] File not found: ${file.path}");
+        return _handleException("File not found: ${file.path}");
+      }
+
+      final streamed = await request.send().timeout(defaultTimeout);
+      final response = await http.Response.fromStream(streamed);
+
+      return _handleResponse(response);
+    } catch (e) {
+      log.e("[MULTIPART PUT] Error: $e");
+      return _handleException("PUT Multipart Error: $e");
+    }
+  }
+
+
+
 
 
 }

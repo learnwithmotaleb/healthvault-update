@@ -258,7 +258,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     // ✅ Toggle using provider ID
                     onFavoriteTap: () {
-                      controllerFavorite.toggleFavorite(provider.id.toString());
+                      setState(() {
+
+                      });
+                      controllerFavorite.toggleFavorite(
+                        provider.id.toString(),
+                        providerName: provider.fullName,
+                      );
+
                     },
                     onViewDetails: () {
 

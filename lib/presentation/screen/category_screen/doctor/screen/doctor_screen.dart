@@ -8,22 +8,46 @@ import '../../../../../utils/app_colors/app_colors.dart';
 import '../../../../../utils/assets_image/app_images.dart';
 import '../../../../../utils/static_strings/static_strings.dart';
 import '../../../../widget/custom_appbar.dart';
+import '../../../profile/favourite_profile/controller/favourite_controller.dart';  // ✅ import
 import '../controller/doctor_controller.dart';
 import '../widget/doctor_card.dart';
 
-class DoctorScreen extends StatelessWidget {
+class DoctorScreen extends StatefulWidget {
   const DoctorScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<DoctorScreen> createState() => _DoctorScreenState();
+}
+
+class _DoctorScreenState extends State<DoctorScreen> {
+
+  final doctorController = Get.put(DoctorController(apiClient: ApiClient()));
+  // ✅ Find shared FavouriteController
+  final favouriteController = Get.find<FavouriteController>();
+
+
+  late String providerTypeId;
+  late String providerTypeLabel;
+
+  @override
+  void initState() {
+    super.initState();
+
     final args = Get.arguments ?? {};
-    final providerTypeId = args["providerTypeId"] ?? '';
-    final providerTypeLabel = args["providerTypeLabel"] ?? AppStrings.doctor.tr;
+    providerTypeId = args["providerTypeId"] ?? '';
+    providerTypeLabel = args["providerTypeLabel"] ?? AppStrings.doctor.tr;
 
-    final doctorController = Get.put(DoctorController(apiClient: ApiClient()));
-
-    // Fetch doctors when screen opens
     doctorController.fetchDoctors(providerTypeId);
+  }
+
+
+
+
+
+
+
+  @override
+  Widget build(BuildContext context) {
 
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
@@ -43,17 +67,18 @@ class DoctorScreen extends StatelessWidget {
           itemBuilder: (context, index) {
             final doctor = doctorController.doctors[index];
 
-            // Extract doctor details safely
             final user = (doctor["user"] as List<dynamic>?)?.first ?? {};
             final servicesList = doctor["services"] as List<dynamic>? ?? [];
             final serviceTitles = servicesList
                 .map((s) => (s as Map<String, dynamic>)["title"]?.toString() ?? "")
                 .toList();
 
-            final availability = <String, String>{};
+            // ✅ Get the correct provider ID (adjust field name based on your model)
+            final providerId = doctor["_id"]?.toString() ??
+                doctor["id"]?.toString() ??
+                user["profileId"]?.toString() ?? '';
 
-            // Optional: If you have a real availability list in API, parse it here
-            // For now, we’ll add a dummy availability example
+            final availability = <String, String>{};
             availability["Saturday"] = "6:30 PM - 10:30 PM\n6:30 PM - 10:30 PM";
             availability["Friday"] = "6:30 PM - 10:30 PM";
 
@@ -68,16 +93,26 @@ class DoctorScreen extends StatelessWidget {
               services: serviceTitles,
               availability: availability,
 
+              // ✅ Read from FavouriteController
+              isFavorite: favouriteController.isFavorite(providerId),
+
+              // ✅ Toggle using FavouriteController with correct ID
               onFavoriteTap: () {
-                doctorController.addFavorite(doctor["providerTypeId"]);
+                setState(() {
+
+                });
+                favouriteController.toggleFavorite(
+                  providerId,
+                  providerName: user["fullName"] ?? doctor["fullName"],
+
+                );
+
               },
 
               onViewDetails: () {
                 Get.toNamed(
                   RoutePath.infoProviderDetails,
-                  arguments: {
-                    "profileId": user["profileId"],        // ✅ required for API
-                  },
+                  arguments: {"profileId": user["profileId"]},
                 );
               },
             );

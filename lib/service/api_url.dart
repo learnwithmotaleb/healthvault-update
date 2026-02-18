@@ -3,7 +3,9 @@ class ApiUrl {
   //static const mainDomain = "https://6dxv0gtk-3333.inc1.devtunnels.ms";
   //static const mainDomain = "https://6dxv0gtk-3333.inc1.devtunnels.ms";
   //static const mainDomain = "https://health-vault-mobile-application.vercel.app";
-  static const mainDomain = "https://8r91dfjh-3333.inc1.devtunnels.ms";
+  //static const mainDomain = "https://8r91dfjh-3333.inc1.devtunnels.ms";
+  static const mainDomain = "https://6dxv0gtk-3333.inc1.devtunnels.ms";
+
   // static const mainDomain = "https://health-vault-mobile-application.vercel.app";
   static final baseUrl = '$mainDomain/api/v1';
 
@@ -26,6 +28,7 @@ class ApiUrl {
   static String resetPassword = "$baseUrl/auth/reset-password";
 
   static String refreshToken = "$baseUrl/auth/refresh-token";
+  static String deleteAccount = "$baseUrl/auth/delete-me";
   static const getMeProvider = "/user/getMe";
   static const getMeAdmin = "/auth/admin/me";
 
@@ -88,19 +91,19 @@ class ApiUrl {
 
 
   //======================== Document===================
-  static String fetchDocumentSelf= "$baseUrl/medicalDocument/update-document";
-  static String fetchDocumentFamily= "$baseUrl/medicalDocument/update-document";
+  static String fetchDocumentSelf= "$baseUrl/medicalDocument/medical-document";
+  static String fetchDocumentFamily= "$baseUrl/medicalDocument/medical-document";
 
 
-  static String addDocumentSelf= "$baseUrl/medicalDocument/create-document";
+  static String addDocumentSelf= "$baseUrl/medicalDocument/medical-document";
   //form-data
   //medical_mySelf_image
 
-  static String addDocumentFamily= "$baseUrl/medicalDocument/create-document";
+  static String addDocumentFamily= "$baseUrl/medicalDocument/medical-document";
   //form-data
   //medical_family_image
 
-  static String removeDocumentSelf= "$baseUrl/medicalDocument/update-document";
+  static String removeDocumentSelf= "$baseUrl/medicalDocument/medical-document";
   //body
   // {
   //   "deleteMedical_mySelf_image": [     "uploads\\images\\medical_mySelf_image\\1769668946501-play_store_512.png",
@@ -108,7 +111,7 @@ class ApiUrl {
   //             "uploads\\images\\medical_mySelf_image\\1769669208881-play_store_512.png"],
 
 
-  static String removeDocumentFamily= "$baseUrl/medicalDocument/update-document";
+  static String removeDocumentFamily= "$baseUrl/medicalDocument/medical-document";
   //body
   // "deleteMedical_family_image":[          "uploads\\images\\medical_family_image\\1770437350552-verified.png",
   //             "uploads\\images\\medical_family_image\\1770437429045-verified.png",

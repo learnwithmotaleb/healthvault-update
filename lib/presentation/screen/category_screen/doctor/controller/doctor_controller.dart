@@ -46,23 +46,5 @@ class DoctorController extends GetxController {
   }
 
 
-  /// Add a provider to favorite
-  Future<bool> addFavorite(String providerId) async {
-    final url = ApiUrl.createFavorite(providerId);
-
-    final response = await apiClient.post(
-      url: url,
-      isToken: true, // assuming user must be logged in
-    );
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      Get.snackbar("Success", "Added to favorites");
-      return true;
-    } else {
-      Get.snackbar("Error", response.body['message'] ?? "Failed to add favorite");
-      return false;
-    }
-  }
-
 
 }
