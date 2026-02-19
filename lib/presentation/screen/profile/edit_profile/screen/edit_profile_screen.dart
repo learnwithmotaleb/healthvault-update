@@ -85,7 +85,7 @@ class EditProfileScreen extends StatelessWidget {
                           const SizedBox(height: 8),
                           HVTextField(
                             controller: controller.nameController,
-                            hint: "Abdul Motaleb",
+                            hint: "Your Update Name",
                             validator: AppValidators.required(),
                           ),
                           SizedBox(height: Dimensions.h(16)),
@@ -95,7 +95,7 @@ class EditProfileScreen extends StatelessWidget {
                           const SizedBox(height: 8),
                           HVTextField(
                             controller: controller.numberController,
-                            hint: "+8801701577479",
+                            hint: "+0123456789",
                             validator: AppValidators.required(),
                           ),
                           SizedBox(height: Dimensions.h(16)),
@@ -119,7 +119,7 @@ class EditProfileScreen extends StatelessWidget {
                           HVTextField(
                             controller: controller.genderController,
                             validator: AppValidators.required(),
-                            hint: "Male",
+                            hint: "Your Gender",
                           ),
 
                           SizedBox(height: Dimensions.h(30)),

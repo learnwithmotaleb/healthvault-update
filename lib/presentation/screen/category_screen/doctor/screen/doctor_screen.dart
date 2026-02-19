@@ -8,8 +8,9 @@ import '../../../../../utils/app_colors/app_colors.dart';
 import '../../../../../utils/assets_image/app_images.dart';
 import '../../../../../utils/static_strings/static_strings.dart';
 import '../../../../widget/custom_appbar.dart';
-import '../../../profile/favourite_profile/controller/favourite_controller.dart';  // ✅ import
+import '../../../profile/favourite_profile/controller/favourite_controller.dart';
 import '../controller/doctor_controller.dart';
+import '../simmer/simmer_effect.dart';
 import '../widget/doctor_card.dart';
 
 class DoctorScreen extends StatefulWidget {
@@ -20,11 +21,8 @@ class DoctorScreen extends StatefulWidget {
 }
 
 class _DoctorScreenState extends State<DoctorScreen> {
-
   final doctorController = Get.put(DoctorController(apiClient: ApiClient()));
-  // ✅ Find shared FavouriteController
   final favouriteController = Get.find<FavouriteController>();
-
 
   late String providerTypeId;
   late String providerTypeLabel;
@@ -32,55 +30,65 @@ class _DoctorScreenState extends State<DoctorScreen> {
   @override
   void initState() {
     super.initState();
-
     final args = Get.arguments ?? {};
     providerTypeId = args["providerTypeId"] ?? '';
     providerTypeLabel = args["providerTypeLabel"] ?? AppStrings.doctor.tr;
-
     doctorController.fetchDoctors(providerTypeId);
   }
 
-
-
-
-
-
-
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       appBar: CommonAppBar(title: providerTypeLabel.toString().tr),
       body: Obx(() {
+        // ── Loading state → shimmer ──
         if (doctorController.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const DoctorListShimmer(itemCount: 5);
         }
 
+        // ── Empty state ──
         if (doctorController.doctors.isEmpty) {
           return const Center(child: Text("No doctors found"));
         }
 
+        // ── Loaded state ──
         return ListView.builder(
           padding: const EdgeInsets.all(8),
           itemCount: doctorController.doctors.length,
           itemBuilder: (context, index) {
             final doctor = doctorController.doctors[index];
 
-            final user = (doctor["user"] as List<dynamic>?)?.first ?? {};
-            final servicesList = doctor["services"] as List<dynamic>? ?? [];
+            final user =
+                (doctor["user"] as List<dynamic>?)?.first ?? {};
+            final servicesList =
+                doctor["services"] as List<dynamic>? ?? [];
             final serviceTitles = servicesList
-                .map((s) => (s as Map<String, dynamic>)["title"]?.toString() ?? "")
+                .map((s) =>
+            (s as Map<String, dynamic>)["title"]?.toString() ?? "")
                 .toList();
 
-            // ✅ Get the correct provider ID (adjust field name based on your model)
             final providerId = doctor["_id"]?.toString() ??
                 doctor["id"]?.toString() ??
-                user["profileId"]?.toString() ?? '';
+                user["profileId"]?.toString() ??
+                '';
 
+            // Build availability map
+            final availabilityDaysList =
+                doctor["availabilityDays"] as List<dynamic>? ?? [];
             final availability = <String, String>{};
-            availability["Saturday"] = "6:30 PM - 10:30 PM\n6:30 PM - 10:30 PM";
-            availability["Friday"] = "6:30 PM - 10:30 PM";
+            for (var day in availabilityDaysList) {
+              final dayMap = day as Map<String, dynamic>;
+              final dayOfWeek = dayMap["dayOfWeek"]?.toString() ?? "";
+              final slots =
+              (dayMap["availabilitySlots"] as List<dynamic>? ?? [])
+                  .map((s) {
+                final slot = s as Map<String, dynamic>;
+                return "From: ${slot["startTime"]} - To: ${slot["endTime"]}";
+              })
+                  .join("\n");
+              availability[dayOfWeek] = slots;
+            }
 
             return DoctorsCard(
               name: user["fullName"] ?? doctor["fullName"] ?? 'N/A',
@@ -92,23 +100,14 @@ class _DoctorScreenState extends State<DoctorScreen> {
                   : AppImages.appLogo,
               services: serviceTitles,
               availability: availability,
-
-              // ✅ Read from FavouriteController
               isFavorite: favouriteController.isFavorite(providerId),
-
-              // ✅ Toggle using FavouriteController with correct ID
               onFavoriteTap: () {
-                setState(() {
-
-                });
+                setState(() {});
                 favouriteController.toggleFavorite(
                   providerId,
                   providerName: user["fullName"] ?? doctor["fullName"],
-
                 );
-
               },
-
               onViewDetails: () {
                 Get.toNamed(
                   RoutePath.infoProviderDetails,

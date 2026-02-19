@@ -4,7 +4,8 @@ class ApiUrl {
   //static const mainDomain = "https://6dxv0gtk-3333.inc1.devtunnels.ms";
   //static const mainDomain = "https://health-vault-mobile-application.vercel.app";
   //static const mainDomain = "https://8r91dfjh-3333.inc1.devtunnels.ms";
-  static const mainDomain = "https://6dxv0gtk-3333.inc1.devtunnels.ms";
+  // static const mainDomain = "https://6dxv0gtk-3333.inc1.devtunnels.ms";
+  static const mainDomain = "https://8r91dfjh-3333.inc1.devtunnels.ms";
 
   // static const mainDomain = "https://health-vault-mobile-application.vercel.app";
   static final baseUrl = '$mainDomain/api/v1';

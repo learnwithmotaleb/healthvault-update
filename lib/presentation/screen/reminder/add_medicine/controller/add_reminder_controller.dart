@@ -127,8 +127,10 @@ class AddReminderController extends GetxController {
 
       isLoading.value = false;
 
-      if (res.statusCode == 200 && res.body["success"] == true) {
+      if (res.statusCode == 200 || res.body["success"] == true) {
         AppSnackBar.success(title: "Health Vault","Reminder added successfully!");
+// ✅ Pops all screens until BottomNav is found — no duplicate push
+        Get.until((route) => route.settings.name == RoutePath.bottomNav);
 
 
       } else {

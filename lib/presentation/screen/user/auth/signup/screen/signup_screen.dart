@@ -257,18 +257,25 @@ class _SignupScreenState extends State<SignupScreen> {
 
                     SizedBox(height: Dimensions.h(30)),
 
-                    /// Login Button
-                    HVButton(
-                      label: AppStrings.signup.tr,
-
-                      onPressed: () async {
-                        await controller.signup(); // optional image
-
-                      },
-
+                    Obx(() => HVButton(
+                      label: controller.isLoading.value ? "" :  AppStrings.signup.tr,
+                      onPressed: controller.isLoading.value ? null : controller.signup,
                       height: 52,
                       width: double.infinity,
-                    ),
+                      child: controller.isLoading.value
+                          ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          color: AppColors.primaryColor,
+                          strokeWidth: 2.5,
+                        ),
+                      )
+                          : null,
+                    )),
+
+                    /// Login Button
+
                     SizedBox(height: Dimensions.h(10)),
 
                     /// Sign Up Text

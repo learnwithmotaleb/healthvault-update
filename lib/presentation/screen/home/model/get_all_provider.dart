@@ -74,6 +74,7 @@ class Provider {
   List<User>? user;
   String? profileImage;
   String? fullName;
+  String? displayName;           // added
   String? providerTypeId;
   List<String>? serviceId;
   String? about;
@@ -82,6 +83,8 @@ class Provider {
   String? identificationImages;
   String? specialization;
   String? medicalLicenseNumber;
+  String? drugLicenseNumber;             // added (HOSPITAL)
+  String? businessRegistrationNumber;    // added (HOSPITAL)
   int? yearsOfExperience;
   List<String>? languages;
   bool? isVerified;
@@ -98,6 +101,7 @@ class Provider {
     this.user,
     this.profileImage,
     this.fullName,
+    this.displayName,
     this.providerTypeId,
     this.serviceId,
     this.about,
@@ -106,6 +110,8 @@ class Provider {
     this.identificationImages,
     this.specialization,
     this.medicalLicenseNumber,
+    this.drugLicenseNumber,
+    this.businessRegistrationNumber,
     this.yearsOfExperience,
     this.languages,
     this.isVerified,
@@ -125,6 +131,7 @@ class Provider {
         : [],
     profileImage: json['profile_image'],
     fullName: json['fullName'],
+    displayName: json['displayName'],
     providerTypeId: json['providerTypeId'],
     serviceId: json['serviceId'] != null ? List<String>.from(json['serviceId']) : [],
     about: json['about'],
@@ -133,6 +140,8 @@ class Provider {
     identificationImages: json['identification_images'],
     specialization: json['specialization'],
     medicalLicenseNumber: json['medicalLicenseNumber'],
+    drugLicenseNumber: json['drugLicenseNumber'],
+    businessRegistrationNumber: json['businessRegistrationNumber'],
     yearsOfExperience: json['yearsOfExperience'],
     languages: json['languages'] != null ? List<String>.from(json['languages']) : [],
     isVerified: json['isVerified'],
@@ -154,6 +163,7 @@ class Provider {
     'user': user?.map((x) => x.toJson()).toList(),
     'profile_image': profileImage,
     'fullName': fullName,
+    'displayName': displayName,
     'providerTypeId': providerTypeId,
     'serviceId': serviceId,
     'about': about,
@@ -162,6 +172,8 @@ class Provider {
     'identification_images': identificationImages,
     'specialization': specialization,
     'medicalLicenseNumber': medicalLicenseNumber,
+    'drugLicenseNumber': drugLicenseNumber,
+    'businessRegistrationNumber': businessRegistrationNumber,
     'yearsOfExperience': yearsOfExperience,
     'languages': languages,
     'isVerified': isVerified,
@@ -272,7 +284,7 @@ class Service {
   String? providerType;
   bool? isAdminCreated;
   String? title;
-  int? price;
+  num? price; // num instead of int to safely handle decimals
   bool? isDeleted;
   String? createdAt;
   String? updatedAt;

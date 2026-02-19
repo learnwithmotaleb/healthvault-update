@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:healthvault/core/routes/route_path.dart';
 import 'package:healthvault/helper/date_time_converter/date_time_converter.dart';
-import 'package:healthvault/helper/tost_message/show_snackbar.dart';
 import 'package:healthvault/presentation/widget/custom_appbar.dart';
 import 'package:healthvault/utils/app_colors/app_colors.dart';
 import 'package:healthvault/utils/static_strings/static_strings.dart';
 
-import '../../../../widget/confermation_alert.dart';
 import '../controller/select_reminder_controller.dart';
+import '../simmer_effect/simmer_effect.dart';
 import '../widget/select_reminder_card.dart';
 
 class SelectReminderScreen extends StatefulWidget {
@@ -40,12 +39,12 @@ class _SelectReminderScreenState extends State<SelectReminderScreen> {
         showBack: false,
       ),
       body: Obx(() {
-        // Loading state
+        // ── Loading state → shimmer ──
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const ReminderListShimmer(itemCount: 5);
         }
 
-        // Empty state
+        // ── Empty state ──
         if (controller.reminders.isEmpty) {
           return RefreshIndicator(
             onRefresh: _refreshReminders,
@@ -53,7 +52,6 @@ class _SelectReminderScreenState extends State<SelectReminderScreen> {
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
                 const SizedBox(height: 300),
-
                 Center(
                   child: Text(
                     "No reminders found",
@@ -69,7 +67,7 @@ class _SelectReminderScreenState extends State<SelectReminderScreen> {
           );
         }
 
-        // List of reminders
+        // ── Loaded state ──
         return RefreshIndicator(
           onRefresh: _refreshReminders,
           child: ListView.separated(
@@ -87,21 +85,29 @@ class _SelectReminderScreenState extends State<SelectReminderScreen> {
                 times: item.times ?? [],
                 startDate: DateTimeHelper.date(item.startDate ?? "--"),
                 endDate: DateTimeHelper.date(item.endDate ?? "--"),
-
+                rawStartDate: item.startDate ?? "",
+                rawEndDate: item.endDate ?? "",
                 instructions: item.instructions ?? "--",
                 assignedTo: item.assignedTo ?? "--",
-                  onDelete: () {
-
-                    controller.deleteReminder(item.sId.toString());
-
-                  },
-
+                onDelete: () {
+                  controller.deleteReminder(item.sId.toString());
+                },
                 onEdit: () {
                   Get.toNamed(
                     RoutePath.editReminder,
-                    arguments: {'id': item.sId.toString()},
+                    arguments: {
+                      'id': item.sId.toString(),
+                      'pillName': item.pillName ?? '',
+                      'dosage': item.dosage?.toString() ?? '',
+                      'timesPerDay': item.timesPerDay?.toString() ?? '',
+                      'times': item.times ?? [],
+                      'schedule': item.schedule ?? '',
+                      'startDate': item.startDate ?? '',
+                      'endDate': item.endDate ?? '',
+                      'instructions': item.instructions ?? '',
+                      'assignedTo': item.assignedTo ?? '',
+                    },
                   )?.then((value) => _refreshReminders());
-                  print(item.sId.toString());
                 },
               );
             },
@@ -111,13 +117,10 @@ class _SelectReminderScreenState extends State<SelectReminderScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Get.toNamed(RoutePath.addReminder)?.then((value) {
-            _refreshReminders(); // Refresh after adding
+            _refreshReminders();
           });
         },
-
-        child: Icon(Icons.add,size: 30,),
-
-
+        child: const Icon(Icons.add, size: 30),
       ),
     );
   }

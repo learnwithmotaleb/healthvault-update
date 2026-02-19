@@ -9,10 +9,11 @@ import '../../../../widget/custom_appbar.dart';
 import '../../../../widget/hv_text_field.dart';
 import '../../../profile/favourite_profile/controller/favourite_controller.dart';
 import '../controller/search_controller.dart';
+import '../simmer_effect/simmer_effect.dart';
 import '../widget/search_list_card.dart';
 
 class SearchScreen extends StatefulWidget {
-  SearchScreen({super.key});
+  const SearchScreen({super.key});
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -20,8 +21,6 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final SearchController controller = Get.put(SearchController());
-
-  // ✅ Find shared instance — don't create new one
   final controllerFavorite = Get.find<FavouriteController>();
 
   @override
@@ -35,7 +34,7 @@ class _SearchScreenState extends State<SearchScreen> {
           children: [
             SizedBox(height: Dimensions.h(10)),
 
-            /// SEARCH FIELD
+            // ── Search field ──
             HVTextField(
               controller: controller.searchTextController,
               hint: AppStrings.provider.tr,
@@ -47,19 +46,21 @@ class _SearchScreenState extends State<SearchScreen> {
 
             SizedBox(height: Dimensions.h(20)),
 
-            /// HEADER
+            // ── Header: Search History + Clear All ──
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   AppStrings.searchHistory.tr,
-                  style: AppTextStyles.title.copyWith(fontWeight: FontWeight.normal),
+                  style: AppTextStyles.title
+                      .copyWith(fontWeight: FontWeight.normal),
                 ),
                 GestureDetector(
                   onTap: controller.clearSearch,
                   child: Text(
                     AppStrings.clearAll.tr,
-                    style: AppTextStyles.body.copyWith(color: AppColors.primaryColor),
+                    style: AppTextStyles.body
+                        .copyWith(color: AppColors.primaryColor),
                   ),
                 ),
               ],
@@ -67,9 +68,15 @@ class _SearchScreenState extends State<SearchScreen> {
 
             SizedBox(height: Dimensions.h(20)),
 
-            /// SEARCH RESULTS
+            // ── Search results ──
             Expanded(
               child: Obx(() {
+                // ── Loading state → shimmer ──
+                if (controller.isLoading.value) {
+                  return const SearchListShimmer(itemCount: 6);
+                }
+
+                // ── Empty state ──
                 if (controller.filteredList.isEmpty) {
                   return Center(
                     child: Text(
@@ -79,37 +86,35 @@ class _SearchScreenState extends State<SearchScreen> {
                   );
                 }
 
+                // ── Loaded state ──
                 return ListView.separated(
                   itemCount: controller.filteredList.length,
-                  separatorBuilder: (_, __) => SizedBox(height: Dimensions.h(12)),
+                  separatorBuilder: (_, __) =>
+                      SizedBox(height: Dimensions.h(12)),
                   itemBuilder: (context, index) {
                     final item = controller.filteredList[index];
-
-                    // ✅ Get the correct provider ID (adjust field name based on your model)
-                    final providerId = item.sId ?? item.providerTypeId?.toString() ?? '';
+                    final providerId =
+                        item.sId ?? item.providerTypeId?.toString() ?? '';
 
                     return SearchListCard(
                       name: item.fullName ?? "",
                       type: item.providerType?.label ?? "",
                       address: item.address ?? "",
-                      imagePath: item.profileImage != null && item.profileImage!.isNotEmpty
+                      imagePath: item.profileImage != null &&
+                          item.profileImage!.isNotEmpty
                           ? "${ApiUrl.mainDomain}/${item.profileImage!.replaceAll(r'\', '/')}"
                           : "",
-                      services: item.services?.map((s) => s.title ?? "").toList() ?? [],
-
-                      // ✅ Check using actual provider ID
+                      services: item.services
+                          ?.map((s) => s.title ?? "")
+                          .toList() ??
+                          [],
                       isFavorite: controllerFavorite.isFavorite(providerId),
-
-                      // ✅ Toggle using provider ID with name
                       onFavoriteTap: () {
                         controllerFavorite.toggleFavorite(
                           providerId,
                           providerName: item.fullName,
                         );
-                        // ✅ No setState needed — Obx handles it
-                        setState(() {
-
-                        });
+                        setState(() {});
                       },
                     );
                   },

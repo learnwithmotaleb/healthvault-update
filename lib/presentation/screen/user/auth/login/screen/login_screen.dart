@@ -188,14 +188,23 @@ class LoginScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 30),
 
-                            /// Login Button
-                            HVButton(
-                              label: AppStrings.signIn.tr,
-                              onPressed: controller.login,
+
+                            Obx(() => HVButton(
+                              label: controller.isLoading.value ? "" : AppStrings.signIn.tr,
+                              onPressed: controller.isLoading.value ? null : controller.login,
                               height: 52,
                               width: double.infinity,
-                            ),
-                            const SizedBox(height: 20),
+                              child: controller.isLoading.value
+                                  ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: AppColors.primaryColor,
+                                  strokeWidth: 2.5,
+                                ),
+                              )
+                                  : null,
+                            )),
 
 
                             /// Sign Up Text

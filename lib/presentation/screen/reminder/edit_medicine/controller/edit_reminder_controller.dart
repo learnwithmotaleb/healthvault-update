@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:healthvault/core/routes/route_path.dart';
 import 'package:healthvault/service/api_service.dart';
+import '../../../../../core/routes/route_path.dart';
 import '../../../../../helper/tost_message/show_snackbar.dart';
 import '../../../../../service/api_url.dart';
 import '../../add_medicine/widget/convert_time.dart';
@@ -37,13 +37,42 @@ class EditReminderController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    final args = Get.arguments;
-    reminderId = args['id'];
-  print("  //=================Reminder id======================");
-    print(reminderId.toString());
-  print("  //=================Reminder id======================");
+    _loadArguments();
+  }
 
+  /// ✅ Pre-fill all fields from passed arguments
+  void _loadArguments() {
+    final args = Get.arguments as Map<String, dynamic>? ?? {};
 
+    reminderId = args['id']?.toString() ?? '';
+
+    print("//=================Reminder id======================");
+    print(reminderId);
+    print("//=================Reminder id======================");
+
+    // Pre-fill text controllers
+    pillNameController.text = args['pillName']?.toString() ?? '';
+    dosageController.text = args['dosage']?.toString() ?? '';
+    perDayController.text = args['timesPerDay']?.toString() ?? '';
+    freequencyController.text = args['schedule']?.toString() ?? '';
+    instructionsController.text = args['instructions']?.toString() ?? '';
+    medicationController.text = args['assignedTo']?.toString() ?? '';
+
+    // ✅ Start / End date — store raw ISO for API, display formatted
+    startDateController.text = args['startDate']?.toString() ?? '';
+    endDateController.text = args['endDate']?.toString() ?? '';
+
+    // ✅ Times — take first time if list exists
+    final times = args['times'];
+    if (times is List && times.isNotEmpty) {
+      timeController.text = times.first.toString();
+    }
+
+    // ✅ Sync observable labels so dropdowns show correct selection
+    selectedDosageLabel.value = dosageController.text;
+    selectedDosageCode.value = dosageController.text;
+    selectedPerDayLabel.value = perDayController.text;
+    selectedPerDayCode.value = perDayController.text;
   }
 
   /// Set selected dosage
@@ -58,12 +87,6 @@ class EditReminderController extends GetxController {
     selectedPerDayLabel.value = label;
     selectedPerDayCode.value = code;
     perDayController.text = label;
-  }
-
-  /// Validate time in HH:MM format
-  bool _isValidTimeFormat(String time) {
-    final regex = RegExp(r'^([01]?[0-9]|2[0-3]):[0-5][0-9]$');
-    return regex.hasMatch(time);
   }
 
   /// Validate all fields before updating
@@ -84,7 +107,6 @@ class EditReminderController extends GetxController {
       AppSnackBar.fail(title: "Reminder", "Please select time");
       return false;
     }
-
     if (freequencyController.text.trim().isEmpty) {
       AppSnackBar.fail(title: "Reminder", "Please enter frequency");
       return false;
@@ -105,25 +127,21 @@ class EditReminderController extends GetxController {
       AppSnackBar.fail(title: "Reminder", "Please assign this medication");
       return false;
     }
-
-    return true; // All validations passed
+    return true;
   }
 
   /// UPDATE Reminder API
   Future<void> updateReminder() async {
     if (!validateFields()) return;
 
-    /// ✅ FORMAT TIME TO HH:MM
+    // Format time to HH:MM
     String rawTime = timeController.text.trim();
-
-    // যদি AM/PM থাকে তাহলে convert করো
     TimeOfDay? pickedTime;
     try {
       final parts = rawTime.split(":");
       if (parts.length >= 2) {
         int hour = int.parse(parts[0]);
         int minute = int.parse(parts[1].substring(0, 2));
-
         pickedTime = TimeOfDay(hour: hour, minute: minute);
       }
     } catch (_) {}
@@ -136,12 +154,9 @@ class EditReminderController extends GetxController {
     final formattedTime =
         "${pickedTime.hour.toString().padLeft(2, '0')}:${pickedTime.minute.toString().padLeft(2, '0')}";
 
-    final times = [formattedTime];
-
-    /// ✅ FORMAT DATE TO ISO
+    // Format dates to ISO
     DateTime? startDate;
     DateTime? endDate;
-
     try {
       startDate = DateTime.parse(startDateController.text.trim());
       endDate = DateTime.parse(endDateController.text.trim());
@@ -154,35 +169,34 @@ class EditReminderController extends GetxController {
       "pillName": pillNameController.text.trim(),
       "dosage": int.tryParse(dosageController.text.trim()) ?? 0,
       "timesPerDay": int.tryParse(perDayController.text.trim()) ?? 1,
-      "times": times,
+      "times": [formattedTime],
       "schedule": freequencyController.text.trim(),
       "startDate": startDate.toUtc().toIso8601String(),
       "endDate": endDate.toUtc().toIso8601String(),
       "instructions": instructionsController.text.trim(),
-      "assignedTo": medicationController.text.trim()
+      "assignedTo": medicationController.text.trim(),
     };
 
     isLoading.value = true;
 
     try {
       final api = ApiClient();
-      final url = ApiUrl.updateReminder(reminderId);
-
       final response = await api.patch(
-        url: url,
+        url: ApiUrl.updateReminder(reminderId),
         body: body,
         isToken: true,
       );
 
-      if (response.statusCode == 200 &&
-          response.body["success"] == true) {
-        AppSnackBar.success(
-            title: "Reminder", "Reminder Updated Successfully");
-        Get.back();
+      final isSuccess = (response.body["success"] as bool?) ?? false;
+
+      if ((response.statusCode == 200 || response.statusCode == 201) && isSuccess) {
+        isLoading.value = false;
+        AppSnackBar.success(title: "Reminder", "Reminder Updated Successfully");
+        Get.until((route) => route.settings.name == RoutePath.bottomNav);
+
       } else {
-        AppSnackBar.info(
-            title: "Reminder",
-            response.body["message"] ?? "Update Failed");
+        isLoading.value = false;
+        AppSnackBar.fail(title: "Reminder", response.body["message"] ?? "Update Failed");
       }
     } catch (e) {
       AppSnackBar.fail(title: "Reminder", "Error: $e");
@@ -191,14 +205,8 @@ class EditReminderController extends GetxController {
     }
   }
 
-
   @override
   void onClose() {
-
-
-
-
-
     pillNameController.dispose();
     dosageController.dispose();
     perDayController.dispose();

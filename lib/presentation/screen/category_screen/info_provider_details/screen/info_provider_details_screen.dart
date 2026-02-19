@@ -18,6 +18,7 @@ import '../../details/widget/date_picker_field.dart';
 import '../../details/widget/select_your_service_field.dart';
 import '../../details/widget/time_picker_filed.dart';
 import '../controller/info_provider_details_controller.dart';
+import '../simmer/simmer_effect.dart'; // 👈 import shimmer
 
 class InfoProviderDetailsScreen extends StatefulWidget {
   const InfoProviderDetailsScreen({super.key});
@@ -38,7 +39,6 @@ class _InfoProviderDetailsScreenState
 
     final args = Get.arguments ?? {};
     final profileId = args["profileId"];
-
     if (profileId != null) {
       controller.getProviderDetails(profileId);
     }
@@ -57,26 +57,29 @@ class _InfoProviderDetailsScreenState
         }),
       ),
       body: Obx(() {
+        // ── Loading state → shimmer ──
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const InfoProviderDetailsShimmer();
         }
 
+        // ── Error state ──
         if (controller.errorMessage.isNotEmpty) {
           return Center(child: Text(controller.errorMessage.value));
         }
 
+        // ── No data ──
         final provider = controller.provider.value;
-
         if (provider == null) {
           return const Center(child: Text("No provider data"));
         }
 
+        // ── Loaded state ──
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Profile Image
+              // ── Profile image ──
               if (provider.profileImage != null)
                 Center(
                   child: CircleAvatar(
@@ -88,25 +91,25 @@ class _InfoProviderDetailsScreenState
                 ),
               SizedBox(height: Dimensions.h(10)),
 
-              // Specialization
+              // ── Specialization ──
               Row(
                 children: [
                   Text(AppStrings.specialisations.tr,
                       style: AppTextStyles.label),
-                  Spacer(),
+                  const Spacer(),
                   Text(provider.specialization ?? "N/A",
                       style: AppTextStyles.label),
                 ],
               ),
               SizedBox(height: Dimensions.h(10)),
 
-              // Address
+              // ── Address ──
               Text(AppStrings.address.tr, style: AppTextStyles.label),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(provider.address ?? "N/A"),
               SizedBox(height: Dimensions.h(10)),
 
-              // Services
+              // ── Services ──
               const Text(
                 "Services",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -117,7 +120,7 @@ class _InfoProviderDetailsScreenState
 
               SizedBox(height: Dimensions.h(20)),
 
-              // Appointment Form
+              // ── Appointment form ──
               Form(
                 key: controller.formKey,
                 child: Column(
@@ -166,7 +169,8 @@ class _InfoProviderDetailsScreenState
                     Text(AppStrings.addDocument.tr,
                         style: AppTextStyles.label),
                     SizedBox(height: Dimensions.h(12)),
-                    // Upload box (100 x 100)
+
+                    // Upload box
                     Obx(
                           () => GestureDetector(
                         onTap: () {
@@ -183,7 +187,8 @@ class _InfoProviderDetailsScreenState
                               decoration: BoxDecoration(
                                 color: AppColors.whiteColor,
                                 borderRadius: BorderRadius.circular(10),
-                                border: Border.all(color: AppColors.primaryColor),
+                                border: Border.all(
+                                    color: AppColors.primaryColor),
                                 boxShadow: const [
                                   BoxShadow(
                                     color: AppColors.greyColor,
@@ -201,23 +206,24 @@ class _InfoProviderDetailsScreenState
                                 ),
                               )
                                   : ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius:
+                                BorderRadius.circular(10),
                                 child: Image.file(
-                                  File(controller.pickedImage.value!.path),
+                                  File(controller
+                                      .pickedImage.value!.path),
                                   width: 100,
                                   height: 100,
                                   fit: BoxFit.cover,
                                 ),
                               ),
                             ),
-
                           ],
                         ),
                       ),
                     ),
                     SizedBox(height: Dimensions.h(30)),
 
-                    // Book Appointment Button
+                    // Book Appointment button
                     HVButton(
                       label: AppStrings.bookAppointment,
                       onPressed: () {
@@ -226,7 +232,6 @@ class _InfoProviderDetailsScreenState
                               title: "Error", "No service available");
                           return;
                         }
-
                         controller.createAppointment(
                           providerId: provider.id!,
                           serviceId: provider.services!.first.id!,

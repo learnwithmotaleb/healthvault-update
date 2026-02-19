@@ -24,12 +24,6 @@ class _ProviderEditScheduleScreenState
 
   final controller = Get.put(ProviderEditScheduleController());
 
-  @override
-  void initState() {
-    super.initState();
-    // 🔑 Replace with actual profileId
-    controller.getProviderAvailability("YOUR_PROFILE_ID");
-  }
 
   @override
   Widget build(BuildContext context) {

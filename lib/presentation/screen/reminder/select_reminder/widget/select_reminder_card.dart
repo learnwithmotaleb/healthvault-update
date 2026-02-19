@@ -8,8 +8,10 @@ class ReminderCard extends StatefulWidget {
   final int timesPerDay;
   final String schedule;
   final List<String> times;
-  final String startDate;
-  final String endDate;
+  final String startDate;      // formatted — for display
+  final String endDate;        // formatted — for display
+  final String rawStartDate;   // ISO string — for progress calc
+  final String rawEndDate;     // ISO string — for progress calc
   final String instructions;
   final String assignedTo;
   final VoidCallback onDelete;
@@ -24,6 +26,8 @@ class ReminderCard extends StatefulWidget {
     required this.times,
     required this.startDate,
     required this.endDate,
+    required this.rawStartDate,
+    required this.rawEndDate,
     required this.instructions,
     required this.assignedTo,
     required this.onDelete,
@@ -47,26 +51,19 @@ class _ReminderCardState extends State<ReminderCard>
 
   double _calculateProgress() {
     try {
-      // Try parsing dates
-      DateTime? start = DateTime.tryParse(widget.startDate);
-      DateTime? end = DateTime.tryParse(widget.endDate);
+      // ✅ Use raw ISO strings — DateTime.tryParse works correctly
+      DateTime? start = DateTime.tryParse(widget.rawStartDate);
+      DateTime? end = DateTime.tryParse(widget.rawEndDate);
 
       if (start == null || end == null) return 0.0;
-
       if (end.isBefore(start)) return 0.0;
 
       DateTime now = DateTime.now();
-
       Duration total = end.difference(start);
       if (total.inMilliseconds <= 0) return 0.0;
 
       Duration elapsed = now.difference(start);
-
-      double value =
-      (elapsed.inMilliseconds / total.inMilliseconds)
-          .clamp(0.0, 1.0);
-
-      return value;
+      return (elapsed.inMilliseconds / total.inMilliseconds).clamp(0.0, 1.0);
     } catch (_) {
       return 0.0;
     }
@@ -91,7 +88,6 @@ class _ReminderCardState extends State<ReminderCard>
 
     _controller.forward();
   }
-
 
   @override
   void dispose() {
@@ -124,7 +120,7 @@ class _ReminderCardState extends State<ReminderCard>
     int percent = (progress * 100).round();
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      margin: const EdgeInsets.symmetric(vertical: 0),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         border: Border.all(color: AppColors.primaryColor),
@@ -141,7 +137,6 @@ class _ReminderCardState extends State<ReminderCard>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Dynamic labels
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -151,15 +146,12 @@ class _ReminderCardState extends State<ReminderCard>
                       ],
                     ),
                     const SizedBox(height: 5),
-
                     LinearProgressIndicator(
                       value: progress,
-                      backgroundColor:
-                      AppColors.hintColor.withOpacity(0.5),
+                      backgroundColor: AppColors.hintColor.withOpacity(0.5),
                       color: AppColors.loginLogoRadiusColor,
                       minHeight: 12,
-                      borderRadius:
-                      const BorderRadius.all(Radius.circular(30)),
+                      borderRadius: const BorderRadius.all(Radius.circular(30)),
                     ),
                   ],
                 ),
@@ -169,17 +161,11 @@ class _ReminderCardState extends State<ReminderCard>
                 children: [
                   IconButton(
                     onPressed: widget.onDelete,
-                    icon: const Icon(
-                      Icons.delete,
-                      color: AppColors.readColor,
-                    ),
+                    icon: const Icon(Icons.delete, color: AppColors.readColor),
                   ),
                   IconButton(
                     onPressed: widget.onEdit,
-                    icon: const Icon(
-                      Icons.edit,
-                      color: AppColors.primaryColor,
-                    ),
+                    icon: const Icon(Icons.edit, color: AppColors.primaryColor),
                   ),
                 ],
               ),
@@ -192,22 +178,21 @@ class _ReminderCardState extends State<ReminderCard>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildRichText("Pill Name", widget.pillName),
-              SizedBox(height: Dimensions.h(3),),
+              SizedBox(height: Dimensions.h(3)),
               _buildRichText("Dosage", widget.dosage),
-              SizedBox(height: Dimensions.h(3),),
-              _buildRichText(
-                  "Times per day", "${widget.timesPerDay} times"),
-              SizedBox(height: Dimensions.h(3),),
+              SizedBox(height: Dimensions.h(3)),
+              _buildRichText("Times per day", "${widget.timesPerDay} times"),
+              SizedBox(height: Dimensions.h(3)),
               _buildRichText("Schedule", widget.schedule),
-              SizedBox(height: Dimensions.h(3),),
+              SizedBox(height: Dimensions.h(3)),
               _buildRichText("Times", widget.times.join(" | ")),
-              SizedBox(height: Dimensions.h(3),),
-              _buildRichText("Start Date", widget.startDate),
-              SizedBox(height: Dimensions.h(3),),
-              _buildRichText("End Date", widget.endDate),
-              SizedBox(height: Dimensions.h(3),),
+              SizedBox(height: Dimensions.h(3)),
+              _buildRichText("Start Date", widget.startDate), // formatted
+              SizedBox(height: Dimensions.h(3)),
+              _buildRichText("End Date", widget.endDate),     // formatted
+              SizedBox(height: Dimensions.h(3)),
               _buildRichText("Instructions", widget.instructions),
-              SizedBox(height: Dimensions.h(3),),
+              SizedBox(height: Dimensions.h(3)),
               _buildRichText("Assigned to", widget.assignedTo),
             ],
           ),

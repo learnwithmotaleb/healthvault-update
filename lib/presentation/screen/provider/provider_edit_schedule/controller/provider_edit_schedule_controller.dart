@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
@@ -23,32 +24,22 @@ class ProviderEditScheduleController extends GetxController {
 
   final ApiClient _apiClient = ApiClient();
 
-
-
-
-  var profileId= SharePrefsHelper.getProfileId();
-
-
-
-
-
+  var profileId = SharePrefsHelper.getProfileId();
 
   @override
   void onInit() {
-
     getProviderAvailability(profileId!);
     print("Profile Id: $profileId");
     super.onInit();
   }
 
+  /// ---------------- DELETE Availability Slot ----------------
   Future<void> deleteAvailabilitySlot({
     required String availabilityDayId,
     required String availabilitySlotId,
   }) async {
-    final url = ApiUrl.deleteProviderAvailability; // just the URL
-
     final response = await _apiClient.delete(
-      url: url,
+      url: ApiUrl.deleteProviderAvailability,
       body: {
         "availabilityDayId": availabilityDayId,
         "availabilitySlotId": availabilitySlotId,
@@ -58,19 +49,11 @@ class ProviderEditScheduleController extends GetxController {
 
     if (response.statusCode == 200) {
       AppSnackBar.success("Slot deleted successfully");
-      // refresh the list after deletion
-      getProviderAvailability(profileId!);
+      await getProviderAvailability(profileId!);
     } else {
       AppSnackBar.fail(response.statusText ?? "Delete failed");
     }
   }
-
-
-
-
-
-
-
 
   /// ---------------- GET Provider Availability ----------------
   Future<void> getProviderAvailability(String profileId) async {
@@ -93,20 +76,14 @@ class ProviderEditScheduleController extends GetxController {
 
   /// ---------------- Create Availability Day ----------------
   Future<String?> createAvailabilityDay() async {
-    final body = {
-      "dayOfWeek": selectedDay.value, // MON, TUE, etc
-    };
-
     final response = await _apiClient.post(
       url: ApiUrl.createAvailabilityDay,
-      body: body,
+      body: {"dayOfWeek": selectedDay.value},
       isToken: true,
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       AppSnackBar.success("Day added successfully");
-
-      /// backend থেকে dayId আসবে
       return response.body["data"]["_id"];
     } else {
       AppSnackBar.fail(response.statusText ?? "Failed to add day");
@@ -116,15 +93,13 @@ class ProviderEditScheduleController extends GetxController {
 
   /// ---------------- Create Availability Slot ----------------
   Future<void> createAvailabilitySlot(String availabilityDayId) async {
-    final body = {
-      "availabilityDayId": availabilityDayId,
-      "startTime": startTime.text, // 11:20
-      "endTime": endTime.text,     // 12:50
-    };
-
     final response = await _apiClient.post(
       url: ApiUrl.createAvailabilitySlot,
-      body: body,
+      body: {
+        "availabilityDayId": availabilityDayId,
+        "startTime": startTime.text,
+        "endTime": endTime.text,
+      },
       isToken: true,
     );
 
@@ -146,13 +121,25 @@ class ProviderEditScheduleController extends GetxController {
       return;
     }
 
-    final dayId = await createAvailabilityDay();
+    String? dayId;
+
+    /// ✅ Check if selected day already exists — reuse its ID
+    final existingDay = availabilityList.firstWhereOrNull(
+          (day) => day.dayOfWeek == selectedDay.value,
+    );
+
+    if (existingDay != null) {
+      /// Day already exists, no need to create
+      dayId = existingDay.sId;
+    } else {
+      /// Day doesn't exist, create it first
+      dayId = await createAvailabilityDay();
+    }
+
     if (dayId != null) {
       await createAvailabilitySlot(dayId);
+      await getProviderAvailability(profileId!);
     }
-    // refresh the list after deletion
-    getProviderAvailability(profileId!);
-    Get.back();
   }
 
   void clearFields() {

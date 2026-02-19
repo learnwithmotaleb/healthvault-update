@@ -182,15 +182,32 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                 ),
 
                 SizedBox(height: Dimensions.h(30)),
-                HVButton(
-                  height: Dimensions.h(65),
-                    label: "Add Reminder".tr, onPressed: () {
-                  controller.addReminder();
 
-
-
-
-                }),
+                Obx(() => HVButton(
+                  label: controller.isLoading.value ? "" :  "Add Reminder".tr,
+                  onPressed: controller.isLoading.value ? null : controller.addReminder,
+                  height: 52,
+                  width: double.infinity,
+                  child: controller.isLoading.value
+                      ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      color: AppColors.primaryColor,
+                      strokeWidth: 2.5,
+                    ),
+                  )
+                      : null,
+                )),
+                // HVButton(
+                //   height: Dimensions.h(65),
+                //     label: "Add Reminder".tr, onPressed: () {
+                //
+                //
+                //
+                //
+                //
+                // }),
 
                 SizedBox(height: Dimensions.h(100)),
               ],

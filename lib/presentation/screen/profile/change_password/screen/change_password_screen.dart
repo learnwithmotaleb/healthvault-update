@@ -80,10 +80,25 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
                     SizedBox(height: Dimensions.h(40)),
 
-                    HVButton(
-                      label: AppStrings.update.tr,
-                      onPressed: controller.changePassword,
-                    ),
+
+                    Obx(() => HVButton(
+                      label: controller.isLoading.value ? "" : AppStrings.update.tr,
+                      onPressed: controller.isLoading.value ? null : controller.changePassword,
+                      height: 52,
+                      width: double.infinity,
+                      child: controller.isLoading.value
+                          ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          color: AppColors.primaryColor,
+                          strokeWidth: 2.5,
+                        ),
+                      )
+                          : null,
+                    )),
+
+
 
                     SizedBox(height: Dimensions.h(24)),
                   ],

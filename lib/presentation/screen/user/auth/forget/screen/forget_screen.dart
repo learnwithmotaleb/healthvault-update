@@ -97,16 +97,24 @@ class _ForgetScreenState extends State<ForgetScreen> {
             ),
             SizedBox(height: Dimensions.h(80)),
 
-            // Send Code Button
-            HVButton(
-              label: AppStrings.sendCode.tr,
-              onPressed: () {
-                controller.sendCode();
-              },
-              height: Dimensions.h(52),
+            Obx(() => HVButton(
+              label: controller.isLoading.value ? "" :  AppStrings.sendCode.tr,
+              onPressed: controller.isLoading.value ? null : controller.sendCode,
+              height: 52,
               width: double.infinity,
-            ),
-            SizedBox(height: Dimensions.h(20)),
+              child: controller.isLoading.value
+                  ? const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  color: AppColors.primaryColor,
+                  strokeWidth: 2.5,
+                ),
+              )
+                  : null,
+            )),
+
+
           ],
         ),
       ),

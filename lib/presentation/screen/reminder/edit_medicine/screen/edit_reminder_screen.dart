@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:get/get_utils/src/extensions/internacionalization.dart';
 
 import '../../../../../core/responsive_layout/dimensions/dimensions.dart';
@@ -166,13 +167,24 @@ class _EditReminderScreenState extends State<EditReminderScreen> {
                 ),
                 SizedBox(height: Dimensions.h(30)),
 
-                // Update Button
-                HVButton(
-                  label: AppStrings.update.tr,
-                  onPressed: () {
-                    controller.updateReminder();
-                  },
-                ),
+
+                Obx(() => HVButton(
+                  label: controller.isLoading.value ? "" :  "Update Reminder".tr,
+                  onPressed: controller.isLoading.value ? null : controller.updateReminder,
+                  height: 52,
+                  width: double.infinity,
+                  child: controller.isLoading.value
+                      ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      color: AppColors.primaryColor,
+                      strokeWidth: 2.5,
+                    ),
+                  )
+                      : null,
+                )),
+
                 SizedBox(height: Dimensions.h(100)),
               ],
             ),
