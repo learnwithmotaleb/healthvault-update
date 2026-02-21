@@ -68,31 +68,27 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Obx(() {
                         if (controller.isLoading.value) {
-                          return Center(child: CupertinoActivityIndicator(color: Colors.white));
+                          return const Center(
+                            child: CupertinoActivityIndicator(color: Colors.white),
+                          );
                         }
 
-                        final user = controller.userData.value;
-                        final baseUrl = "${ApiUrl.mainDomain}/";
-
-                        // Get profile image from normalUserDetails
-                        final profileImage = (user?.normalUserDetails?.isNotEmpty ?? false)
-                            ? user!.normalUserDetails![0].profileImage
+                        // ✅ Use updated controller getters
+                        final fullImageUrl = controller.fullImageUrl.isNotEmpty
+                            ? controller.fullImageUrl
                             : null;
 
-                        final fullImageUrl = (profileImage != null && profileImage.isNotEmpty)
-                            ? "$baseUrl${profileImage.replaceAll("\\", "/")}" // replace backslashes
-                            : null;
-
-                        // First letter fallback
-                        final firstLetter = (user?.fullName != null && user!.fullName!.isNotEmpty)
-                            ? user.fullName![0].toUpperCase()
+                        final firstLetter = controller.fullName.isNotEmpty
+                            ? controller.fullName[0].toUpperCase()
                             : "?";
 
                         return ListTile(
                           leading: CircleAvatar(
                             radius: 30,
                             backgroundColor: AppColors.primaryColor,
-                            backgroundImage: fullImageUrl != null ? NetworkImage(fullImageUrl) : null,
+                            backgroundImage: fullImageUrl != null
+                                ? NetworkImage(fullImageUrl)
+                                : null,
                             child: fullImageUrl == null
                                 ? Text(
                               firstLetter,
@@ -104,7 +100,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 : null,
                           ),
                           title: Text(
-                            user?.fullName ?? "Loading...",
+                            controller.fullName.isNotEmpty
+                                ? controller.fullName
+                                : "Loading...",
                             style: AppTextStyles.title.copyWith(
                               color: AppColors.whiteColor,
                               fontSize: 20,
@@ -117,9 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           trailing: GestureDetector(
-                            onTap: () {
-                              Get.toNamed(RoutePath.notification);
-                            },
+                            onTap: () => Get.toNamed(RoutePath.notification),
                             child: Container(
                               width: 40,
                               height: 40,
@@ -130,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   color: AppColors.whiteColor.withOpacity(0.5),
                                 ),
                               ),
-                              child: Icon(
+                              child: const Icon(
                                 Icons.notifications,
                                 color: AppColors.whiteColor,
                               ),
