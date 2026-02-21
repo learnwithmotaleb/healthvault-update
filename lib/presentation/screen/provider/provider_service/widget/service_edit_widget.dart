@@ -86,7 +86,10 @@ class EditItemBottomSheet extends StatelessWidget {
                   price: updatedPrice,
                 );
 
-                Get.back(); // close bottom sheet
+
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                }
               },
             ),
           ],

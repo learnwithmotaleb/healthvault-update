@@ -9,7 +9,6 @@ import 'package:healthvault/presentation/widget/hv_validation.dart';
 import 'package:healthvault/utils/app_text_style/app_text_style.dart';
 
 import '../../../../../core/responsive_layout/dimensions/dimensions.dart';
-import '../../../../../core/routes/route_path.dart';
 import '../../../../../utils/app_colors/app_colors.dart';
 import '../../../../../utils/assets_image/app_images.dart';
 import '../../../../../utils/static_strings/static_strings.dart';
@@ -28,50 +27,59 @@ class EditProfileScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Obx(() {
+
+          // ✅ Show full screen loader while loading existing profile
+          if (controller.isLoading.value &&
+              controller.nameController.text.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
           return Stack(
             children: [
               SingleChildScrollView(
                 child: Column(
                   children: [
+                    SizedBox(height: Dimensions.h(10)),
+
                     /// ----------------- Profile Image -----------------
-                    Stack(
-                      children: [
-                        CircleAvatar(
-                          radius: Dimensions.r(56),
-                          backgroundColor: AppColors.primaryColor,
-                          backgroundImage: controller.pickedImage.value != null
-                              ? FileImage(controller.pickedImage.value!)
-                              : AssetImage(AppImages.motalebImage)
-                          as ImageProvider,
-                        ),
-                        Positioned(
-                          right: 0,
-                          bottom: 0,
-                          child: GestureDetector(
-                            onTap: controller.pickImage,
-                            child: Container(
-                              width: 35,
-                              height: 35,
-                              decoration: BoxDecoration(
-                                color: AppColors.primaryColor,
-                                borderRadius: BorderRadius.circular(100),
-                                boxShadow: [
-                                  BoxShadow(
-                                    spreadRadius: 1,
-                                    color: AppColors.blackColor,
-                                    blurRadius: 5,
-                                  )
-                                ],
-                              ),
-                              child: const Icon(
-                                Icons.camera_alt,
-                                color: AppColors.whiteColor,
+                    // ✅ Replace the image Stack with this
+                    Obx(() {
+                      return Stack(
+                        children: [
+                          CircleAvatar(
+                            radius: Dimensions.r(56),
+                            backgroundColor: AppColors.primaryColor,
+                            backgroundImage: _resolveImage(controller),
+                          ),
+                          Positioned(
+                            right: 0,
+                            bottom: 0,
+                            child: GestureDetector(
+                              onTap: controller.pickImage,
+                              child: Container(
+                                width: 35,
+                                height: 35,
+                                decoration: BoxDecoration(
+                                  color: AppColors.primaryColor,
+                                  borderRadius: BorderRadius.circular(100),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      spreadRadius: 1,
+                                      color: AppColors.blackColor,
+                                      blurRadius: 5,
+                                    ),
+                                  ],
+                                ),
+                                child: const Icon(
+                                  Icons.camera_alt,
+                                  color: AppColors.whiteColor,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      );
+                    }),
 
                     SizedBox(height: Dimensions.h(20)),
 
@@ -85,7 +93,7 @@ class EditProfileScreen extends StatelessWidget {
                           const SizedBox(height: 8),
                           HVTextField(
                             controller: controller.nameController,
-                            hint: "Your Update Name",
+                            hint: "Your Name",
                             validator: AppValidators.required(),
                           ),
                           SizedBox(height: Dimensions.h(16)),
@@ -96,6 +104,7 @@ class EditProfileScreen extends StatelessWidget {
                           HVTextField(
                             controller: controller.numberController,
                             hint: "+0123456789",
+                            keyboardType: TextInputType.phone,
                             validator: AppValidators.required(),
                           ),
                           SizedBox(height: Dimensions.h(16)),
@@ -103,14 +112,11 @@ class EditProfileScreen extends StatelessWidget {
                           Text(AppStrings.dateOfBirth.tr,
                               style: AppTextStyles.body),
                           const SizedBox(height: 8),
-
                           DatePickerField(
                             controller: controller.dateOfBirthController,
                             hintText: "Select Date Of Birth",
                             validator: AppValidators.required(),
-
-                          )
-,
+                          ),
                           SizedBox(height: Dimensions.h(16)),
 
                           Text(AppStrings.gender.tr,
@@ -119,7 +125,7 @@ class EditProfileScreen extends StatelessWidget {
                           HVTextField(
                             controller: controller.genderController,
                             validator: AppValidators.required(),
-                            hint: "Your Gender",
+                            hint: "MALE / FEMALE",
                           ),
 
                           SizedBox(height: Dimensions.h(30)),
@@ -127,16 +133,15 @@ class EditProfileScreen extends StatelessWidget {
                       ),
                     ),
 
+                    // ✅ Show loader only on submit, not full screen
                     controller.isLoading.value
                         ? const CircularProgressIndicator()
                         : HVButton(
                       label: AppStrings.update,
-                      onPressed: () async {
-                        controller.updateProfile();
-                      },
+                      onPressed: () => controller.updateProfile(),
                     ),
 
-
+                    SizedBox(height: Dimensions.h(30)),
                   ],
                 ),
               ),
@@ -145,5 +150,16 @@ class EditProfileScreen extends StatelessWidget {
         }),
       ),
     );
+  }
+
+  // ✅ Resolve correct image source in priority order
+  ImageProvider _resolveImage(EditProfileController controller) {
+    if (controller.pickedImage.value != null) {
+      return FileImage(controller.pickedImage.value!);
+    } else if (controller.existingImageUrl.value.isNotEmpty) {
+      return NetworkImage(controller.existingImageUrl.value);
+    } else {
+      return AssetImage(AppImages.motalebImage);
+    }
   }
 }

@@ -14,14 +14,16 @@ import '../../../../widget/hv_text_field.dart';
 import '../controller/provider_service_controller.dart';
 
 class AddItemBottomSheet extends StatelessWidget {
-  final String providerType; // ✅ receive from constructor
+  final String providerType;
 
-  AddItemBottomSheet({
+  const AddItemBottomSheet({  // ✅ added const
     super.key,
     required this.providerType,
   });
 
-  final ProviderServiceController controller = Get.put(ProviderServiceController());
+  // ✅ Use Get.find() instead of Get.put() to reuse existing controller
+  ProviderServiceController get controller =>
+      Get.find<ProviderServiceController>();
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +63,6 @@ class AddItemBottomSheet extends StatelessWidget {
             HVButton(
               label: AppStrings.add.tr,
               onPressed: () async {
-                // Validate inputs
                 final title = controller.title.text.trim();
                 final price = int.tryParse(controller.price.text.trim()) ?? 0;
 
@@ -70,20 +71,21 @@ class AddItemBottomSheet extends StatelessWidget {
                   return;
                 }
 
-                // Call API
                 await controller.createService(
                   title: title,
                   price: price,
                   providerType: providerType,
                 );
 
-                // Close Bottom Sheet
-                Get.back();
 
-                // Clear inputs
+                // ✅ Clear first, then close
                 controller.title.clear();
                 controller.price.clear();
-                controller.providerType.clear();
+
+                // ✅ Use Navigator instead of Get.back() for bottom sheets
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                }
               },
             ),
             SizedBox(height: Dimensions.h(24)),

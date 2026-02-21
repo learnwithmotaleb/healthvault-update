@@ -4,13 +4,20 @@ import 'package:healthvault/utils/app_text_style/app_text_style.dart';
 import '../../../../../utils/app_colors/app_colors.dart';
 
 class ServiceCardWidget extends StatelessWidget {
-  final Map<String, dynamic> data;
+  // ✅ Direct named parameters instead of Map
+  final String title;
+  final String subtitle;
+  final String address;
+  final String description;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
   const ServiceCardWidget({
     super.key,
-    required this.data,
+    required this.title,
+    required this.subtitle,
+    required this.address,
+    required this.description,
     required this.onEdit,
     required this.onDelete,
   });
@@ -19,65 +26,46 @@ class ServiceCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: Dimensions.h(185),
+      height: Dimensions.h(110),
       padding: const EdgeInsets.all(12),
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         border: Border.all(color: AppColors.primaryColor, width: 1),
-        borderRadius: BorderRadius.circular(5),
-        color:AppColors.primaryColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(10),
+        color: AppColors.primaryColor.withOpacity(0.1),
       ),
-
-      /// ✔ FIX: NO SCROLL VIEW HERE
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-
-          /// LEFT IMAGE
-          Center(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(5),
-              child: _buildImage(data["image"]),
-            ),
-          ),
-
-          const SizedBox(width: 12),
-
-          /// TEXT CONTENT (flexible)
+          /// TEXT CONTENT
           Expanded(
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    data["title"],
+                    title, // ✅ direct variable
                     style: AppTextStyles.body.copyWith(
                       color: AppColors.primaryColor,
-                      fontWeight: FontWeight.bold
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-              
                   const SizedBox(height: 4),
-              
                   Text(
-                    data["subtitle"],
+                    subtitle, // ✅ direct variable
                     style: AppTextStyles.body.copyWith(
-                        color: AppColors.blackColor
+                      color: AppColors.blackColor,
                     ),
                   ),
-              
                   const SizedBox(height: 4),
-              
                   Text(
-                    data["address"],
+                    address, // ✅ direct variable
                     style: const TextStyle(color: Colors.black54),
                   ),
-              
                   const SizedBox(height: 4),
-              
                   Text(
-                    data["description"],
+                    description, // ✅ direct variable
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -91,35 +79,17 @@ class ServiceCardWidget extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: onEdit,
-                  child: Icon(Icons.edit, size: 20, color: AppColors.loginLogoRadiusColor)),
-              SizedBox(width: Dimensions.w(10),),
-
+                child: Icon(Icons.edit, size: 20, color: AppColors.loginLogoRadiusColor),
+              ),
+              SizedBox(width: Dimensions.w(10)),
               GestureDetector(
                 onTap: onDelete,
-                  child: Icon(Icons.delete, size: 20, color: Colors.red)),
+                child: const Icon(Icons.delete, size: 20, color: Colors.red),
+              ),
             ],
           ),
         ],
       ),
     );
-  }
-
-  /// Supports both asset and network images
-  Widget _buildImage(String path) {
-    if (path.startsWith("http")) {
-      return Image.network(
-        path,
-        width: 92,
-        height: 106,
-        fit: BoxFit.cover,
-      );
-    } else {
-      return Image.asset(
-        path,
-        width: 92,
-        height: 106,
-        fit: BoxFit.cover,
-      );
-    }
   }
 }
